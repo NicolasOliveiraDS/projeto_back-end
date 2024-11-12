@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="script.js" defer></script>
+    <title>NICOLAS | DEV</title>
+    <style>
+        *{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+.nave,.fecha,.button-top,.video ,.legend,.vj,.center-popup,.goria,.card0,.card1,.card2,.card3,.login,.tabela{
+    visibility: hidden;
+}
+
+body{
+    height: 100vh;
+    font-family: 'Oswald', sans-serif;
+    background-color: #000;
+}
+.top-site{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    padding: 0px 20px;
+    top: 0;
+    margin: 0;
+}
+.nav ul {
+    list-style: none;
+    display: flex;
+}
+.nav ul li {
+    margin: 0 25px;
+}
+.nav{
+    background: transparent;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    padding: 0px 5px;
+}
+.nav ul li a {
+    font-family: 'Bebas Neue', sans-serif;
+    color: rgba(231, 225, 225, 0.582);
+    text-decoration: none;
+    font-weight: bold;
+}
+.nav ul li a:hover{
+    transition: all 0.5s ease-in-out;
+    color: #A500B5;
+}
+.btn{
+    font-family: 'Bebas Neue', sans-serif;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background-color: #000;
+    color: rgba(255, 255, 255, 0.733);
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.8s ease-in-out;
+}
+.btn:hover{
+    background-color: #A500B5;
+    color: #000;
+}
+.logo{
+    height: 5rem;
+    width: 8rem;
+}
+
+.abertura{
+    margin: 10% 50px;
+    position: relative; /* Garante que o conteúdo fique acima da palper */
+    z-index: 1; /* Garantir que fique acima do fundo */
+}
+.titulo{
+    color: #fff;
+    font-size: 6.5rem;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.legenda{
+    color: #686767;
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    padding: 5px 0px;
+}
+.subtitulo{
+    color: rgba(204, 202, 202, 0.774);
+    font-family:  sans-serif;
+    font-size: 15px;
+}
+
+.top-button{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 15px;
+}
+.day,.day2{
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: transparent;
+    color: #fff;
+    transition: all ease-in-out 1s;
+    cursor: pointer;
+    border: none;
+}
+.day:hover{
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+    background-color: #040404;
+    color: #fff;
+    border: none;
+}
+.day2:hover{
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+    background-color: #090909;
+    color: #fff;
+    border: none;
+}
+.palper{
+    background-image: url(mao2.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    position: relative;
+    height: 100vh;
+}
+.loading-screen{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px); /* Efeito de desfoque */
+    z-index: 10;
+    transition: opacity 0.5s ease;
+
+}
+.loader{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+img{
+    height: 12rem;
+}
+.container{
+    display: flex;
+    align-items: center;
+    width: 15rem;
+    height: 100%;
+}
+.barra {
+    width: 20rem;
+    height: 100%;
+    border: 1px solid white;
+    margin-top: 0;
+    padding: 0;
+    animation-name: barra;
+    animation-duration: 5s;
+}
+
+@keyframes barra{
+    from{
+        width: 0;
+    }
+    to{
+        width: 100%;
+    }
+}
+
+
+.trailer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 110vh;
+    background-image:url(Design\ sem\ nome\ \(2\).png) ;
+    background-repeat: no-repeat;
+    background-size: cover;
+    flex-direction: column;
+}
+.video-player {
+    width: 100%; /* Faz o vídeo ocupar toda a largura disponível */
+    max-width: 960px; /* Limita a largura máxima do vídeo */
+    height: auto; /* Ajusta a altura automaticamente para manter a proporção */
+    border: 2px solid #A500B5; /* Borda suave ao redor do vídeo */
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+    background-color: #000; /* Cor de fundo preta (útil caso o vídeo falhe ao carregar) */
+}
+
+/* Estilos do controle de vídeo */
+.video-player::-webkit-media-controls {
+    background-color: rgba(0, 0, 0, 0.8); /* Cor de fundo para controles */
+    border-radius: 4px; /* Bordas arredondadas para os controles */
+}
+.seta{
+    height: 4.5rem;
+    margin: 10px;
+    animation: flutuar  3s infinite ease-in-out;
+    position: relative;
+    cursor: pointer;
+}
+@keyframes flutuar{
+    0%{
+        top: 15px;
+    }
+    50% {
+        top: 20px; /* Meio do caminho */
+    }
+    100%{
+        top: 10px;
+    }
+}
+.formularios{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    height: 120vh;
+    background-image: url(Design\ sem\ nome\ \(5\).png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+form{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 20px;
+    height: 28rem;
+    width: 50%;
+    top: 0;
+    overflow: hidden;
+    border-radius: 15px;
+}
+.emblema{
+    height: 4rem;
+}
+
+.form-titulo{
+    color: #fff;
+    font-size: 4rem;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    top: 0;
+}
+.popup-center,.input{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0px 0px;
+    height: 100%;
+    width: 50%;
+}
+.input2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    background-color: #A500B5;
+    height: 100%;
+    width: 50%;
+}
+input{  
+    width: 16rem;
+    height: 3rem;
+    background: #e6e2e7;
+    border: none;
+    outline: none;
+    color: #c80d0d;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 15px;
+}
+input[type="text"],input[type="email"],input[type="senha"]{
+    color: #080808;
+    font-size: 15px;
+}
+.bnt{
+    height: 3rem;
+    width: 12rem;
+    border-radius: 10px;
+    font-family:'Bebas Neue', sans-serif ;
+    color: #000;
+    font-size: 1.5rem;
+    transition: all 0.8s ease-in-out;
+    cursor: pointer;
+    border: none;
+}
+.bnt2{
+    height: 3rem;
+    width: 12rem;
+    border-radius: 10px;
+    font-family:'Bebas Neue', sans-serif ;
+    color: #000;
+    font-size: 1.5rem;
+    transition: all 0.8s ease-in-out;
+    cursor: pointer;
+    border: none;
+}
+.bnt:hover,.bnt2:hover{
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+    background-color: #000;
+    color: #fff;
+}
+.vm{
+    color: #fff;
+    font-size: 4rem;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    border: #A500B5 solid 1px;
+    height: 28rem;
+    width: 60%;
+    overflow: hidden;
+    border-radius: 15px;
+}
+/*tabela*/
+.table{
+    height: 120vh;
+    /*background-image: url(Design\ sem\ nome\ \(11\).png);
+    background-repeat: no-repeat;
+    background-size: cover;*/
+}
+.box-table,.table-titulo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 0px ;
+    font-weight: bold;
+    color: #A500B5;
+    font-size: 4rem;
+}
+.bracket {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    justify-items: center;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.matchup {
+    margin: 8px 0;
+}
+
+.matchup2 {
+    margin: 8px 0;
+}
+.matchup3{
+    margin-bottom: 0px;
+}
+
+/* Times e Estilos Gerais */
+.team {
+    background-color: #f3f3f3;
+    padding: 10px;
+    margin: 0px 0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* Estilo para a semifinal e final */
+.round-2, .round-3, .round-4 {
+    grid-column: span 1;
+}
+
+.mvp h1 {
+    font-size: 2.5em;
+    color: #070707;
+    transition: all 0.8s ease-in-out;
+    cursor: pointer;
+}
+.campe:hover{
+    color: #ccc;
+    transition: all 0.8s ease-in-out;
+}
+
+/* Ocultar elementos perdedores */
+.hidden {
+    display: none;
+}
+/* Estilo para dispositivos menores (responsividade) */
+@media (max-width: 768px) {
+    .video-player {
+        max-width: 100%; /* Faz o vídeo se ajustar a telas menores */
+    }
+}
+
+
+/*categoria*/
+.categoria{
+    height: 110vh;
+    background-image: url(Design\ sem\ nome\ \(8\).png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.ceta{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cate-titulo{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-left: 23%;
+    margin-top: 2%;
+}
+.cate-titulo2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.categoria-titulo2{
+    color: #fff;
+    font-size: 4rem;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    top: 0;
+}
+.categoria-titulo{
+    color: #fff;
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    top: 0;
+    overflow: hidden; /* Oculta o conteúdo que ainda não foi "digitado" */
+    white-space: nowrap; /* Impede que o texto quebre em várias linhas */
+    border-right: 3px solid #333; /* Adiciona um "cursor" de digitação */
+    width: 0; /* Inicialmente, a largura é 0 */
+    animation: typing 5s steps(100) 1s forwards, blink 0.5s step-end infinite; /* Animação de digitação e cursor piscando */
+}
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+    }
+
+    /* Animação do cursor piscando */
+    @keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+.sessoes-flex{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 2%;
+}
+.sessoes-card0{
+    background-color: #ffff;
+    height:30rem;
+    width: 20rem;
+    padding: 2rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card0:hover{
+    transform: translateY(-20px);
+    border: 2px solid #A500B5; /* Borda suave ao redor do vídeo */
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+}
+.sessoes-card0::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background-color: linear-gradient(to bottom,rgba(0,176,155,0.5), rgb(150,201,61,1,));
+    transition: 0.5s all;
+    opacity: 100;
+}
+.sessoes-card0:hover::before{
+    opacity: 1;
+}/*cards 0*/
+.kraven,.thunder,.venom,.domsday{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+}
+.sessoes-card1{
+    height:30rem;
+    width: 20rem;
+    padding: 2rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px;
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card1:hover{
+    transform: translateY(-20px);
+    border: 2px solid #A500B5; /* Borda suave ao redor do vídeo */
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card1::before{
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background-color: linear-gradient(to bottom,rgba(240, 0, 0, 0.782), rgb(5, 5, 248));
+    transition: 0.5s all;
+    opacity: 1;
+}
+.sessoes-card1:hover::before{
+    opacity: 1;
+}/*cards 1*/
+.sessoes-card2{
+    height:30rem;
+    width: 20rem;
+    padding: 2rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px;
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card2:hover{
+    transform: translateY(-20px);
+    border: 2px solid #A500B5; /* Borda suave ao redor do vídeo */
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card2::before{
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background-color: linear-gradient(to bottom,rgba(240, 0, 0, 0.782), rgb(5, 5, 248));
+    transition: 0.5s all;
+    opacity: 1;
+}
+.sessoes-card2:hover::before{
+    opacity: 1;
+}/*cards 2*/
+.sessoes-card3{
+    height:30rem;
+    width: 20rem;
+    padding: 2rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px;
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card3:hover{
+    transition: 0.5s ease-in-out;
+    transform: translateY(-20px);
+    border: 2px solid #A500B5; /* Borda suave ao redor do vídeo */
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+}
+.sessoes-card3::before{
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background-color: linear-gradient(to bottom,rgba(240, 0, 0, 0.782), rgb(5, 5, 248));
+    transition: 0.5s all;
+    opacity: 1;
+}
+.sessoes-card0:hover::before{
+    opacity: 1;
+}/*cards 3*/
+.info{
+    color: #ffff;
+}
+.sessoes-conteudo0{
+    color: #ffff;
+    z-index: 3;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.5s all;
+}
+.sessoes-card0:hover .sessoes-conteudo0{
+    opacity: 1;
+    transform: translateY(0);
+}
+.sessoes-card0 .sessoes-conteudo0 h1{
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    margin: 0;
+}
+.sessoes-card0 .sessoes-conteudo0 p{
+    letter-spacing: 1px;
+    font-size:15px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card0 .sessoes-conteudo0 .btn{
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    text-decoration: none;
+    font-size:15px;
+    background-color: #f7f2f2;
+    padding: 0.5rem 2rem;
+    color: #060505;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card0 .sessoes-conteudo0 .btn:hover{
+    background-color: #A500B5;
+    color: #ffff;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}/*hover cards0 terminado*/
+
+.sessoes-conteudo1{
+    color: #ffff;
+    z-index: 3;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.5s all;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card1:hover .sessoes-conteudo1{
+    opacity: 1;
+    transform: translateY(0);
+}
+.sessoes-card1 .sessoes-conteudo1 h1{
+    margin: 0;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card1 .sessoes-conteudo1 p{
+    letter-spacing: 1px;
+    font-size:15px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card1 .sessoes-conteudo1 .btn{
+    text-decoration: none;
+    font-size:15px;
+    background-color: #f7f2f2;
+    padding: 0.5rem 2rem;
+    color: #060505;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card1 .sessoes-conteudo1 .btn:hover{
+    background-color: #A500B5;
+    color: #ffff;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}/*hover cards1 terminado*/
+.sessoes-conteudo2{
+    color: #ffff;
+    z-index: 3;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.5s all;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card2:hover .sessoes-conteudo2{
+    opacity: 1;
+    transform: translateY(0);
+}
+.sessoes-card2 .sessoes-conteudo2 h1{
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    margin: 0;
+}
+.sessoes-card2 .sessoes-conteudo2 p{
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    font-size:15px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+}
+.sessoes-card2 .sessoes-conteudo2 .btn{
+    text-decoration: none;
+    font-size:15px;
+    background-color: #f7f2f2;
+    padding: 0.5rem 2rem;
+    color: #060505;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+.sessoes-card2 .sessoes-conteudo2 .btn:hover{
+    background-color: #A500B5;
+    color: #ffff;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}/*hover cards2 terminado*/
+.sessoes-conteudo3{
+    color: #ffff;
+    z-index: 3;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.5s all;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card3:hover .sessoes-conteudo3{
+    opacity: 1;
+    transform: translateY(0);
+}
+.sessoes-card3 .sessoes-conteudo3 h1{
+    margin: 0;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card3 .sessoes-conteudo3 p{
+    letter-spacing: 1px;
+    font-size:15px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card3 .sessoes-conteudo3 .btn{
+    text-decoration: none;
+    font-size:15px;
+    background-color: #f7f2f2;
+    padding: 0.5rem 2rem;
+    color: #060505;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.sessoes-card3 .sessoes-conteudo3 .btn:hover{
+    background-color: #A500B5;
+    color: #ffff;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}/*hover cards3 terminado*/
+.campeao{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 35%;
+}
+.mvp{
+    width: 17rem;
+    height: 4.5rem;
+    display: flex;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all ease-in-out 1s;
+    align-items: center;
+    justify-content: center;
+}
+.mvp:hover{
+    border: #dfe4ea 2px solid;
+    background-color: #070707;
+    color: #dfe4ea;
+}
+h1{
+    font-family:'Bebas Neue', sans-serif ;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+/*RESPONSIVIDADE*/
+
+/* Para telas com largura máxima de 768px (típico de tablets e dispositivos móveis) */
+@media (max-width: 768px) {
+    .categoria {
+        height: 100vh; /* Ajuste a altura para 100% da altura da tela */
+    }
+
+    .cate-titulo {
+        margin-left: 0; /* Remover a margem esquerda em dispositivos menores */
+        font-size: 1.5rem; /* Reduzir o tamanho da fonte */
+    }
+
+    .sessoes-flex {
+        flex-direction: column; /* Organizar os cards em uma coluna em telas menores */
+    }
+
+    .sessoes-card0, .sessoes-card1, .sessoes-card2, .sessoes-card3 {
+        width: 90%; /* Ajuste o tamanho dos cards para 90% da largura da tela */
+        margin-bottom: 20px; /* Adiciona espaço entre os cards */
+    }
+
+    .cate-titulo2 {
+        font-size: 2.5rem; /* Ajustar o tamanho da fonte */
+    }
+}
+@media (max-width: 768px) {
+    body{
+        font-size: 14px; /* Reduz o tamanho da fonte para telas menores */
+    }
+    .top-site {
+        flex-direction: column; /* Organiza a navegação em coluna em vez de linha */
+        padding: 10px;
+    }
+    .nav ul {
+        flex-direction: column; /* Organiza os itens do menu em coluna */
+        gap: 10px;
+    }
+    .nav ul li {
+        margin: 10px 0; /* Ajusta o espaçamento entre os itens do menu */
+    }
+    .logo {
+        width: 6rem; /* Reduz o tamanho do logo em telas menores */
+    }
+    .titulo {
+        font-size: 4rem; /* Ajusta o tamanho do título */
+    }
+    .legenda {
+        font-size: 1.8rem; /* Ajusta o tamanho da legenda */
+    }
+    .subtitulo {
+        font-size: 12px; /* Ajusta o tamanho do subtítulo */
+    }
+    .form-titulo {
+        font-size: 3rem; /* Ajusta o tamanho do título no formulário */
+    }
+    .video-player {
+        width: 90%; /* Ajusta a largura do vídeo para telas pequenas */
+        max-width: 100%;
+    }
+    .formulario {
+        width: 100%; /* Ajusta o formulário para largura total em telas menores */
+        padding: 10px;
+    }
+}
+
+    </style>
+</head>
+
+<body> 
+    <div class="palper">
+        <header class="top-site">
+            <div class="img-logo">
+                <img class="logo" src="cool-fortnite-logo-154uiun82bkt8fjw-removebg-preview.png" alt="">
+            </div>
+            <nav class="nav  nave" id="nav">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#sobre">Rodadas</a></li>
+                    <li><a href="#servicos">Categorias</a></li>
+                    <button class="btn">
+                        login
+                    </button>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="abertura   fecha" >
+            <h1 class="titulo"> O Grande Desafio de <br> Fortnite!</h1>
+            <p class="subtitulo">Prepare-se para a batalha épica que vai abalar o mundo de Fortnite! <br> Junte-se a nós no Ultimate Fortnite Showdown, onde apenas os melhores <br> se destacam e a glória aguarda aqueles que têm coragem. </p>
+
+            <div class="top-button  button-top">
+                <button class="day">COMECE JA!</button>
+                <button class="day2">SAIBA MAIS.</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="trailer">
+        <h1></h1>
+        <video controls  autoplay loop muted class="video-player   video">
+            <source src="Trailer.mp4" type="video/mp4">
+        </video>
+        <h1 class="legenda  legend">Fortnite está chamando você! Cadastre-se e prove que é o melhor!</h1>
+        <img class="seta" src="down-arrow.png" alt="">
+    </section>
+    <section class="formularios">
+        <div class="vm vj">CADASTRE</div>
+            <div class="box">
+                <form   action="registrar.php" method="POST"   class="popup-center  center-popup">
+                    <div class="input">
+                        <div class="form-titulo"> SIGN IN</div>
+                        <input type="text" name="usuario" placeholder="Nome de Usuário" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <input type="password" name="senha" placeholder="Senha" required>
+                        <button class="bnt"  id="confirmar-player-one" type="submit" >CONFIRMAR</button>
+                    </div>
+                </form>
+                <form  action="login.php" method="POST" class="input2  login">
+                    <div class="form-titulo"> LOGIN <span class="span"> IN</span></div>
+                    <input type="text" name="usuario" placeholder="Nome de Usuário" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="senha" placeholder="Senha" required>
+                    <button class="bnt2"  id="confirmar-player-one" type="submit" >CONFIRMAR</button>
+                </form>
+            </div>
+    </section>
+
+    <section class="table  tabela">
+        <div class="box-table">
+            <h1 class="table-titulo">
+                RODADAS
+            </h1>
+        </div>
+        
+        <div class="bracket">
+            <!-- Primeira fase (4 jogos) -->
+            <div class="round round-1">
+                <div class="matchup">
+                    <div class="team team-1" data-team="1">Time 1</div>
+                    <div class="team team-5" data-team="5">Time 5</div>
+                </div>
+                <div class="matchup">
+                    <div class="team team-3" data-team="2">Time 2</div>
+                    <div class="team team-6" data-team="6">Time 6</div>
+                </div>
+                <div class="matchup">
+                    <div class="team team-5" data-team="3">Time 3</div>
+                    <div class="team team-7" data-team="7">Time 7</div>
+                </div>
+                <div class="matchup">
+                    <div class="team team-7" data-team="4">Time 4</div>
+                    <div class="team team-8" data-team="8">Time 8</div>
+                </div>
+            </div>
+    
+            <!-- Semifinais -->
+            <div class="round round-2">
+                <div class="matchup">
+                    <div class="team team-1" data-team="9">Vencedor 1</div>
+                    <div class="team team-2" data-team="10">Vencedor 2</div>
+                </div>
+                <div class="matchup2">
+                    <div class="team team-3" data-team="11">Vencedor 3</div>
+                    <div class="team team-4" data-team="12">Vencedor 4</div>
+                </div>
+            </div>
+    
+            <!-- Final -->
+            <div class="round round-3">
+                <div class="matchup3">
+                    <div class="team team-1" data-team="13">Vencedor Semifinal 1</div>
+                    <div class="team team-2" data-team="14">Vencedor Semifinal 2</div>
+                </div>
+            </div>
+    
+            <div class="round round-4">
+                <div class="matchup">
+                    <div class="team team-1" data-team="15">Finalista 1</div>
+                    <div class="team team-2" data-team="16">Finalista 2</div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="campeao">
+            <button class="mvp">
+                <h1 class="campe">CAMPEÃO</h1>
+            </button>
+        </div>
+    </section>
+    
+
+    <section class="categoria">
+        <div class="cate-titulo2">
+            <h1 class="categoria-titulo2  goria">CATEGORIA</h1>
+        </div>
+        <div class="sessoes-flex" id="sessoes">
+            <div class="sessoes-card0   card0">
+                <img src="maps1.jpg" class="kraven" alt="Kraven">
+                <div class="sessoes-conteudo0">
+                    <h1 class="info">The Storm Island</h1>
+                    <p>Tempestade e ventania o aguarda <br>
+                        Esteja Preparado 👿</p>
+                    <a href="#container" class="btn">CONHEÇA</a>
+                </div>
+            </div>
+            <div class="sessoes-card1   card1">
+                <img src="maps2.jpg" class="thunder" alt="Thunderbolts">
+                <div class="sessoes-conteudo1">
+                    <h1 class="info">The Warrior Island</h1>
+                    <p>Grandes batalha o espera<br>
+                        Esteja Preparado 👿
+                        </p>
+                    <a href="#container" class="btn">CONHEÇA</a>
+                </div>
+            </div>
+            <div class="sessoes-card2 card2 ">
+                <img src="maps3.jpg" class="venom" alt="Venom">
+                <div class="sessoes-conteudo2">
+                    <h1 class="info">The Ice Island</h1>
+                    <p>Estradas congelantes e perigos emininte te espera <br>
+                        Esteja Preparado 👿</p>
+                    <a href="#container" class="btn">CONHEÇA</a>
+                </div>
+            </div>
+            <div class="sessoes-card3  card3">
+                <img src="maps4.jpg" class="domsday" alt="Doomsday">
+                <div class="sessoes-conteudo3">
+                    <h1 class="info">The Shadow Island</h1>
+                    <p>Perigos e armas amaldiçoada <br>
+                        Esteja Preparado 👿
+                    </p>
+                    <a href="#container" class="btn">CONHEÇA</a>
+                </div>
+            </div>
+        </div>
+        <div class="cate-titulo">
+            <h1 class="categoria-titulo  conquista">É hora de decidir seu caminho para o topo! 🔥 Qual categoria de campeonato Fortnite você vai conquistar?</h1>
+        </div>
+    </section>
+
+    <div class="loading-screen" id="loading-screen">
+        <div class="loader">
+            <img src="cool-fortnite-logo-154uiun82bkt8fjw-removebg-preview.png" alt="">
+            <div class="container">
+                <div class="barra"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const titulo = document.querySelector('.categoria-titulo');
+            const texto = titulo.textContent;
+            titulo.textContent = ''; // Limpa o texto inicialmente
+
+            let index = 0;
+            const speed = 1; // Velocidade de digitação (milissegundos)
+
+            // Função para simular o efeito de digitação
+            function type() {
+                if (index < texto.length) {
+                titulo.textContent += texto.charAt(index); // Adiciona uma letra por vez
+                index++;
+                setTimeout(type, speed); // Chama a função recursivamente com o delay
+                }
+            }
+
+            type(); // Inicia a digitação
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    let clickCount = 0; // Contador de cliques
+    const maxClicks = 9; // Número máximo de cliques permitidos
+
+    // Selecionar todos os times
+    const teams = document.querySelectorAll('.team');
+
+    // Adicionar evento de clique em cada time
+    teams.forEach(team => {
+        team.addEventListener('click', function () {
+            // Se já atingimos o número máximo de cliques, não faz nada
+            if (clickCount >= maxClicks) return;
+
+            // Se o time já foi marcado como vencedor, não faça nada
+            if (team.classList.contains('winner')) return;
+
+            // Obter o round atual do time
+            const currentRound = team.closest('.round');
+
+            // Encontrar o time adversário
+            const opponent = currentRound.querySelector('.team:not(.winner)');
+
+            // Marcar o time vencedor
+            team.classList.add('winner');
+
+            // Esconder o perdedor
+            if (opponent) {
+                opponent.classList.add('hidden');
+            }
+
+            // Proxima fase: revelar o vencedor
+            revealNextRound(team);
+
+            // Incrementa o contador de cliques
+            clickCount++;
+
+            // Se atingimos o número máximo de cliques, finalizar o torneio
+            if (clickCount === maxClicks) {
+                displayWinner();
+            }
+        });
+    });
+
+    function revealNextRound(winner) {
+        // Verifique o próximo round e faça o time vencedor avançar
+        const nextRound = winner.closest('.round').nextElementSibling;
+        if (nextRound) {
+            // Encontrar a próxima "matchup" (partida) onde o vencedor será colocado
+            const nextMatchup = nextRound.querySelector('.matchup') || nextRound.querySelector('.matchup2');
+
+            if (nextMatchup) {
+                // Encontrar a posição disponível para o vencedor na próxima rodada
+                const nextTeamSlot = nextMatchup.querySelector('.team:not(.hidden)');
+
+                if (nextTeamSlot) {
+                    // Avançar o vencedor para a próxima rodada
+                    nextTeamSlot.textContent = winner.textContent;
+                    nextTeamSlot.classList.remove('hidden');
+                }
+            }
+        }
+    }
+
+    function displayWinner() {
+        // Exibir o vencedor final
+        const finalMatchup = document.querySelector('.round-4 .matchup');
+        const winner = finalMatchup.querySelector('.team.winner');
+
+        if (winner) {
+            document.querySelector('.campeao h1').textContent = `${winner.textContent} é o CAMPEÃO!`;
+        }
+    }
+});
+
+    </script>
+
+    <script>
+            // Simulando um carregamento de 3 segundos
+        window.onload = function() {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 600); // Tempo de transição
+            }, 2000); // Tempo de simulação de carregamento
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body{
+    height: 100vh;
+}
+.top-site{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    padding: 0px 20px;
+    top: 0;
+    margin: 0;
+}
+.nav ul {
+    list-style: none;
+    display: flex;
+}
+.nav ul li {
+    margin: 0 25px;
+}
+.nav{
+    background-color: rgba(0, 0, 0, 0.356);
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    padding: 0px 5px;
+
+}
+.nav ul li a {
+    font-family: 'Bebas Neue', sans-serif;
+    color: rgba(231, 225, 225, 0.582);
+    text-decoration: none;
+    font-weight: bold;
+}
+.nav ul li a:hover{
+    transition: all 0.5s ease-in-out;
+    color: #A500B5;
+}
+.btn{
+    font-family: 'Bebas Neue', sans-serif;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background-color: #000;
+    color: rgba(255, 255, 255, 0.733);
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.8s ease-in-out;
+}
+.btn:hover{
+    background-color: #A500B5;
+    color: #000;
+}
+.logo{
+    height: 5rem;
+    width: 8rem;
+}
+
+.abertura{
+    margin: 10% 50px;
+}
+.titulo{
+    color: #fff;
+    font-size: 5rem;
+    font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif;
+}
+.subtitulo{
+    color: rgba(204, 202, 202, 0.774);
+    font-family:  sans-serif;
+    font-size: 15px;
+}
+
+.top-button{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 15px;
+}
+.day,.day2{
+    margin-top: 15px;
+    padding: 10px 20px;
+    border:2px solid #fff;
+    background: transparent;
+    color: #fff;
+    transition: all ease-in-out 0.5s;
+    cursor: pointer;
+}
+.day:hover{
+    background-color: #00bfff;
+    color: #fff;
+}
+.day2:hover{
+    background-color: #A500B5;
+    color: #fff;
+}
+.palper{
+    height: 100%;
+    background-image: url(nite.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    width: 100%;
+    position: absolute;
+}
+.loading-screen{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px); /* Efeito de desfoque */
+    z-index: 10;
+    transition: opacity 0.5s ease;
+
+}
+.loader{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+img{
+    height: 12rem;
+}
+.container{
+    display: flex;
+    align-items: center;
+    width: 15rem;
+    height: 100%;
+}
+.barra {
+    width: 20rem;
+    height: 100%;
+    border: 1px solid white;
+    margin-top: 0;
+    padding: 0;
+    animation-name: barra;
+    animation-duration: 5s;
+}
+
+@keyframes barra{
+    from{
+        width: 0;
+    }
+    to{
+        width: 100%;
+    }
+}

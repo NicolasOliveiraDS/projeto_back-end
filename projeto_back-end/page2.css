@@ -1,0 +1,95 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body{
+    background-color:
+}
+.logo{
+    height: 5rem;
+    width: 8rem;
+}
+.btn{
+    font-family: 'Bebas Neue', sans-serif;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background-color: #000;
+    color: rgba(255, 255, 255, 0.733);
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.8s ease-in-out;
+}
+.btn:hover{
+    background-color: #A500B5;
+    color: #000;
+}
+.top-site{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    padding: 0px 20px;
+    top: 0;
+    margin: 0;
+}
+.nav ul {
+    list-style: none;
+    display: flex;
+}
+.nav ul li {
+    margin: 0 25px;
+}
+.nav{
+    background-color: rgba(0, 0, 0, 0.356);
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    padding: 0px 5px;
+
+}
+.nav ul li a {
+    font-family: 'Bebas Neue', sans-serif;
+    color: rgba(231, 225, 225, 0.582);
+    text-decoration: none;
+    font-weight: bold;
+}
+.nav ul li a:hover{
+    transition: all 0.5s ease-in-out;
+    color: #A500B5;
+}
+.trailer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 80px auto;
+}
+.video-player {
+    width: 100%; /* Faz o vídeo ocupar toda a largura disponível */
+    max-width: 960px; /* Limita a largura máxima do vídeo */
+    height: auto; /* Ajusta a altura automaticamente para manter a proporção */
+    border: 2px solid #A500B5; /* Borda suave ao redor do vídeo */
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px #A500B5; /* Sombra sutil */
+    background-color: #000; /* Cor de fundo preta (útil caso o vídeo falhe ao carregar) */
+}
+
+/* Estilos do controle de vídeo */
+.video-player::-webkit-media-controls {
+    background-color: rgba(0, 0, 0, 0.8); /* Cor de fundo para controles */
+    border-radius: 4px; /* Bordas arredondadas para os controles */
+}
+
+/* Estilo para dispositivos menores (responsividade) */
+@media (max-width: 768px) {
+    .video-player {
+        max-width: 100%; /* Faz o vídeo se ajustar a telas menores */
+    }
+}
