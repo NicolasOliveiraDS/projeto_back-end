@@ -10,3 +10,62 @@ body {
   background: #0b0b14;
   color: #ffffff;
 }
+
+header {
+  width: 100%;
+  padding: 20px 40px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: rgba(0, 0, 0, 0.4);
+}
+
+header h1 {
+  font-size: 28px;
+}
+
+nav {
+  display: flex;
+  gap: 25px;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+main {
+  min-height: calc(100vh - 80px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lobby {
+  text-align: center;
+}
+
+.lobby h2 {
+  font-size: 48px;
+  margin: 15px 0;
+}
+
+.lobby p {
+  margin-bottom: 20px;
+}
+
+.lobby button {
+  padding: 15px 40px;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 20px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
