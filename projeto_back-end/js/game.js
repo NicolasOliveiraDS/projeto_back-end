@@ -1,5 +1,6 @@
     let jogador;
     let teclas;
+    let ultimaDirecao = "baixo";
 
     const config = {
     type: Phaser.AUTO,
@@ -162,31 +163,61 @@
     }
 
         function atualizarJogo() {
-            const velocidade = 250;
+        const velocidade = 250;
 
-            jogador.body.setVelocity(0);
+        jogador.body.setVelocity(0);
 
-            if (teclas.cima.isDown) {
-                jogador.body.setVelocityY(-velocidade);
-                jogador.anims.play("andar-cima",true);
-            }
+        let movendoHorizontal = false;
+        let movendoVertical = false;
 
-            else if (teclas.baixo.isDown) {
-                jogador.body.setVelocityY(velocidade);
-                jogador.anims.play("andar-baixo",true)
-            }
+        if (teclas.cima.isDown) {
+            jogador.body.setVelocityY(-velocidade);
+            ultimaDirecao = "cima";
+            movendoVertical = true;
+        }
 
-            else if (teclas.esquerda.isDown) {
-                jogador.body.setVelocityX(-velocidade);
-                jogador.anims.play("andar-esquerda",true)
-            }
+        else if (teclas.baixo.isDown) {
+            jogador.body.setVelocityY(velocidade);
+            ultimaDirecao = "baixo";
+            movendoVertical = true;
+        }
 
-            else if (teclas.direita.isDown) {
-                jogador.body.setVelocityX(velocidade);
-                jogador.anims.play("andar-direita",true)
-            }
+        if (teclas.esquerda.isDown) {
+            jogador.body.setVelocityX(-velocidade);
+            ultimaDirecao = "esquerda";
+            movendoHorizontal = true;
+        }
 
-            else{
-                jogador.anims.stop();
+        else if (teclas.direita.isDown) {
+            jogador.body.setVelocityX(velocidade);
+            ultimaDirecao = "direita";
+            movendoHorizontal = true;
+        }
+
+        jogador.body.velocity.normalize().scale(velocidade);
+
+        if (movendoHorizontal) {
+            if (teclas.esquerda.isDown) {
+                jogador.anims.play("andar-esquerda", true);
+            } else {
+                jogador.anims.play("andar-direita", true);
             }
         }
+
+        else if (movendoVertical) {
+            if (teclas.cima.isDown) {
+                jogador.anims.play("andar-cima", true);
+            } else {
+                jogador.anims.play("andar-baixo", true);
+            }
+        }
+
+        else {
+            jogador.anims.stop();
+
+            if (ultimaDirecao === "baixo") jogador.setFrame(0);
+            if (ultimaDirecao === "cima") jogador.setFrame(4);
+            if (ultimaDirecao === "esquerda") jogador.setFrame(8);
+            if (ultimaDirecao === "direita") jogador.setFrame(12);
+        }
+    }
