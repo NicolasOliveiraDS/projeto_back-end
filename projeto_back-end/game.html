@@ -8,6 +8,14 @@
 </head>
 <body>
     <main class="game">
+        <!-- Atalho exclusivo para mouse/teclado: no mobile ele fica oculto. -->
+        <a class="botao-lobby-rapido" href="index.html" aria-label="Voltar ao lobby" title="Voltar ao lobby">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5h-5.4v-6.5H8.9V21H3.5a.5.5 0 0 1-.5-.5v-9.7Z" />
+            </svg>
+            <span class="texto-visualmente-oculto">Voltar ao lobby</span>
+        </a>
+
         <!-- HUD: os IDs são atualizados em tempo real por js/game.js. -->
         <section class="hud" aria-label="Informações da partida">
             <div class="hud__item hud__item--vida">
@@ -45,16 +53,40 @@
             <strong id="arma-atual" aria-live="polite">PISTOLA</strong>
             <p id="estatisticas-arma" class="hud-armas__estatisticas">SEMIAUTOMÁTICA · DANO 25 · CADÊNCIA BAIXA</p>
 
-            <div class="hud-armas__slots" aria-label="Armas disponíveis">
-                <div class="slot-arma" data-arma="pistola"><kbd>1</kbd><span>PISTOLA</span></div>
-                <div class="slot-arma" data-arma="rifle"><kbd>2</kbd><span>RIFLE</span></div>
-                <div class="slot-arma" data-arma="smg"><kbd>3</kbd><span>SMG</span></div>
-                <div class="slot-arma" data-arma="escopeta"><kbd>4</kbd><span>ESCOPETA</span></div>
-                <div class="slot-arma" data-arma="sniper"><kbd>5</kbd><span>SNIPER</span></div>
+            <div class="hud-armas__municao" aria-label="Munição da arma equipada">
+                <div>
+                    <span>PENTE</span>
+                    <strong id="municao-pente">12</strong><small id="municao-pente-maximo">/ 12</small>
+                </div>
+                <div>
+                    <span>RESERVA</span>
+                    <strong id="municao-reserva">36</strong>
+                </div>
             </div>
 
-            <p class="hud-armas__ajuda">1–5: trocar · ESPAÇO: disparar</p>
+            <div id="status-recarga" class="status-recarga" aria-live="polite" aria-hidden="true">
+                <span>RECARREGANDO...</span>
+                <span class="status-recarga__barra"><span id="progresso-recarga"></span></span>
+            </div>
+
+            <div class="hud-armas__slots" aria-label="Slots de armas">
+                <div class="slot-arma" data-slot="0"><kbd>1</kbd><span data-slot-nome>PISTOLA</span><small data-slot-municao>12 / 36</small></div>
+                <div class="slot-arma slot-arma--vazia" data-slot="1"><kbd>2</kbd><span data-slot-nome>VAZIO</span><small data-slot-municao>—</small></div>
+                <div class="slot-arma slot-arma--vazia" data-slot="2"><kbd>3</kbd><span data-slot-nome>VAZIO</span><small data-slot-municao>—</small></div>
+                <div class="slot-arma slot-arma--vazia" data-slot="3"><kbd>4</kbd><span data-slot-nome>VAZIO</span><small data-slot-municao>—</small></div>
+                <div class="slot-arma slot-arma--vazia" data-slot="4"><kbd>5</kbd><span data-slot-nome>VAZIO</span><small data-slot-municao>—</small></div>
+            </div>
+
+            <p class="hud-armas__ajuda">1–5: trocar · R: recarregar · E: pegar · ESPAÇO: disparar</p>
         </aside>
+
+        <!-- Passos 48 a 50: aparece somente perto de um item coletável. -->
+        <section id="aviso-loot" class="aviso-loot" aria-hidden="true" role="status">
+            <kbd>E</kbd>
+            <span id="loot-nome">PEGAR ITEM</span>
+            <small id="loot-descricao"></small>
+        </section>
+        <p id="feedback-partida" class="feedback-partida" aria-live="polite"></p>
 
         <!-- Passos 26 a 28: modal exibido quando a vida chega a zero. -->
         <section id="tela-derrota" class="tela-derrota" aria-hidden="true" aria-labelledby="titulo-derrota">

@@ -25,6 +25,22 @@ body {
     overflow: hidden;
 }
 
+.texto-visualmente-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Visível apenas em PC/notebook, para não competir com os controles mobile futuros. */
+.botao-lobby-rapido {
+    display: none;
+}
+
 /* Passo 29: HUD exibido por cima do canvas do Phaser. */
 .hud {
     position: absolute;
@@ -84,6 +100,43 @@ body {
     background: var(--cor-perigo);
 }
 
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+    .botao-lobby-rapido {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 11;
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.36);
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.62);
+        color: var(--cor-texto);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .botao-lobby-rapido svg {
+        width: 23px;
+        height: 23px;
+        fill: currentColor;
+    }
+
+    .botao-lobby-rapido:hover,
+    .botao-lobby-rapido:focus-visible {
+        border-color: #54a0ff;
+        background: #54a0ff;
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    .hud {
+        left: 84px;
+    }
+}
+
 /* Passos 33 a 40: painel da arma, separado do inventário futuro. */
 .hud-armas {
     position: absolute;
@@ -119,6 +172,70 @@ body {
     color: #b9c6dc;
     font-size: 0.67rem;
     font-weight: 700;
+}
+
+.hud-armas__municao {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.hud-armas__municao > div {
+    padding: 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.hud-armas__municao span {
+    display: block;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.hud-armas__municao strong {
+    display: inline;
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+.hud-armas__municao small {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.72rem;
+}
+
+.status-recarga {
+    display: none;
+    margin: -3px 0 10px;
+    color: #8fd3ff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.status-recarga.visivel {
+    display: block;
+}
+
+.status-recarga__barra {
+    display: block;
+    width: 100%;
+    height: 4px;
+    margin-top: 5px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.status-recarga__barra span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #54a0ff;
+    transition: width 80ms linear;
 }
 
 .hud-armas__slots {
@@ -158,6 +275,19 @@ body {
     white-space: nowrap;
 }
 
+.slot-arma small {
+    display: block;
+    min-height: 0.7rem;
+    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.53rem;
+    font-weight: 700;
+}
+
+.slot-arma--vazia {
+    opacity: 0.48;
+}
+
 .slot-arma--ativa {
     border-color: #54a0ff;
     background: rgba(84, 160, 255, 0.18);
@@ -168,6 +298,76 @@ body {
     margin-top: 10px;
     font-size: 0.58rem;
     letter-spacing: 0.04em;
+}
+
+/* Passos 48 a 50: instrução de coleta e mensagens rápidas da partida. */
+.aviso-loot,
+.feedback-partida {
+    position: absolute;
+    z-index: 12;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.aviso-loot {
+    bottom: 24px;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: min(360px, calc(100vw - 40px));
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.75);
+    color: var(--cor-texto);
+    transform: translate(-50%, 8px);
+}
+
+.aviso-loot.visivel {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.aviso-loot kbd {
+    display: grid;
+    width: 25px;
+    height: 25px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #111827;
+    font: 800 0.75rem Arial, sans-serif;
+}
+
+.aviso-loot span {
+    font-size: 0.68rem;
+    font-weight: 800;
+}
+
+.aviso-loot small {
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 0.58rem;
+}
+
+.feedback-partida {
+    top: 102px;
+    left: 50%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.72);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    transform: translate(-50%, -8px);
+}
+
+.feedback-partida.visivel {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }
 
 /* Passos 26 a 28: tela final e ações da partida. */
@@ -305,6 +505,16 @@ body {
         bottom: 12px;
         width: calc(100vw - 24px);
         padding: 10px;
+    }
+
+    .aviso-loot {
+        bottom: 210px;
+    }
+
+    .feedback-partida {
+        top: 92px;
+        max-width: calc(100vw - 24px);
+        text-align: center;
     }
 
     .tela-derrota__aviso {

@@ -2,7 +2,7 @@
 
 Os passos **25 a 30** já estão concluídos: vida do jogador, tela de eliminação, reinício, retorno ao lobby, HUD em tempo real e contador de eliminações.
 
-Para aprender a fase atual, comece por [AULA_31_A_40.md](AULA_31_A_40.md). Ela explica, em linguagem simples, inimigos e armas antes de você alterar o código.
+Para aprender as fases atuais, comece por [AULA_31_A_40.md](AULA_31_A_40.md) e depois [AULA_41_A_50.md](AULA_41_A_50.md). Elas explicam inimigos, armas, munição, recarga, slots e loot em linguagem simples.
 
 ## Fluxo da partida
 
@@ -20,6 +20,8 @@ Para aprender a fase atual, comece por [AULA_31_A_40.md](AULA_31_A_40.md). Ela e
 | Vida, dano e velocidade de um tipo de inimigo | `js/game.js` | Objeto `TIPOS_INIMIGOS` |
 | Criar mais inimigos | `js/game.js` | Lista `INIMIGOS_INICIAIS` |
 | Dano, cadência e modo de uma arma | `js/game.js` | Objeto `ARMAS` |
+| Pente, recarga e tipo de munição de uma arma | `js/game.js` | Propriedades da arma em `ARMAS` |
+| Armas e munições espalhadas pelo mapa | `js/game.js` | Lista `LOOT_INICIAL` |
 | Atualizar números do HUD | `js/game.js` | Função `atualizarHUD` |
 | O que ocorre quando o jogador morre | `js/game.js` | Função `mostrarTelaDerrota` |
 | Ação dos botões finais | `js/game.js` | Últimas linhas, eventos de `botaoReiniciar` e `botaoLobby` |
@@ -55,4 +57,4 @@ O contador de jogadores vivos é calculado a partir dessa lista, então não é 
 
 ## Próxima fase recomendada
 
-Os passos **31 a 40** estão concluídos. O próximo bloco é **41 a 57**: munição, carregador, recarga, troca real de armas, loot, inventário, cura e escudo.
+Os passos **31 a 50** estão concluídos. O próximo bloco é **51 a 57**: coleta mais completa, raridade, inventário durante a partida, cura e escudo.

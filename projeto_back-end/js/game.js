@@ -1,12 +1,8 @@
 "use strict";
 
 /*
- * CENTRAL DE AJUSTES DA PARTIDA
- * Altere estes valores para equilibrar o jogo sem procurar números pelo arquivo.
- */
-/*
- * PASSO 32 — Cada tipo reúne suas próprias características.
- * Para criar outro tipo, copie um bloco e altere os valores.
+ * PASSO 32 — Tipos de inimigo.
+ * Para criar outro tipo, copie um bloco e altere somente os seus valores.
  */
 const TIPOS_INIMIGOS = Object.freeze({
     rapido: {
@@ -47,10 +43,7 @@ const TIPOS_INIMIGOS = Object.freeze({
     }
 });
 
-/*
- * PASSO 31 — Esta lista define quem nasce no mapa e onde.
- * Para adicionar um inimigo, inclua outra linha com tipo, x e y.
- */
+/* PASSO 31 — Posições dos inimigos que nascem na arena. */
 const INIMIGOS_INICIAIS = Object.freeze([
     { tipo: "rapido", x: 1120, y: 620 },
     { tipo: "soldado", x: 1420, y: 610 },
@@ -60,71 +53,115 @@ const INIMIGOS_INICIAIS = Object.freeze([
 ]);
 
 /*
- * PASSOS 33 a 40 — Catálogo de armas.
- * Cada arma leva consigo dano, cadência e comportamento de disparo.
+ * PASSOS 41 a 43 — Tipos de munição.
+ * A reserva pertence ao tipo de munição, não a uma arma específica.
+ * Exemplo: pistola e SMG dividem munição leve.
+ */
+const TIPOS_MUNICAO = Object.freeze({
+    leve: { nome: "MUNIÇÃO LEVE", cor: 0xf6e58d },
+    rifle: { nome: "MUNIÇÃO DE RIFLE", cor: 0x54a0ff },
+    cartucho: { nome: "CARTUCHOS", cor: 0xff9f43 },
+    pesada: { nome: "MUNIÇÃO PESADA", cor: 0xff4757 }
+});
+
+/*
+ * PASSOS 33 a 45 — Cada arma carrega dano, cadência, pente e recarga.
+ * capacidadePente: máximo de tiros antes da recarga.
+ * tempoRecarga: duração da recarga em milissegundos.
  */
 const ARMAS = Object.freeze({
     pistola: {
         nome: "PISTOLA",
         tipoDisparo: "SEMIAUTOMÁTICA",
         automatico: false,
+        tipoMunicao: "leve",
         dano: 25,
         intervaloTiro: 350,
         velocidadeBala: 720,
         projeteisPorTiro: 1,
         dispersaoGraus: 0,
         corProjetil: 0xffe66d,
-        cadencia: "BAIXA"
+        cadencia: "BAIXA",
+        capacidadePente: 12,
+        tempoRecarga: 1000
     },
     rifle: {
         nome: "RIFLE",
         tipoDisparo: "AUTOMÁTICO",
         automatico: true,
+        tipoMunicao: "rifle",
         dano: 30,
         intervaloTiro: 140,
         velocidadeBala: 900,
         projeteisPorTiro: 1,
         dispersaoGraus: 0,
         corProjetil: 0x54a0ff,
-        cadencia: "MÉDIA"
+        cadencia: "MÉDIA",
+        capacidadePente: 30,
+        tempoRecarga: 1400
     },
     smg: {
         nome: "SMG",
         tipoDisparo: "AUTOMÁTICA",
         automatico: true,
+        tipoMunicao: "leve",
         dano: 17,
         intervaloTiro: 80,
         velocidadeBala: 780,
         projeteisPorTiro: 1,
         dispersaoGraus: 0,
         corProjetil: 0xa29bfe,
-        cadencia: "ALTA"
+        cadencia: "ALTA",
+        capacidadePente: 32,
+        tempoRecarga: 1200
     },
     escopeta: {
         nome: "ESCOPETA",
         tipoDisparo: "SEMIAUTOMÁTICA",
         automatico: false,
+        tipoMunicao: "cartucho",
         dano: 12,
         intervaloTiro: 700,
         velocidadeBala: 580,
         projeteisPorTiro: 6,
         dispersaoGraus: 22,
         corProjetil: 0xff9f43,
-        cadencia: "BAIXA"
+        cadencia: "BAIXA",
+        capacidadePente: 6,
+        tempoRecarga: 1800
     },
     sniper: {
         nome: "SNIPER",
         tipoDisparo: "SEMIAUTOMÁTICA",
         automatico: false,
+        tipoMunicao: "pesada",
         dano: 100,
         intervaloTiro: 950,
         velocidadeBala: 1200,
         projeteisPorTiro: 1,
         dispersaoGraus: 0,
         corProjetil: 0xff4757,
-        cadencia: "MUITO BAIXA"
+        cadencia: "MUITO BAIXA",
+        capacidadePente: 5,
+        tempoRecarga: 2200
     }
 });
+
+/*
+ * PASSOS 48 a 50 — Itens que aparecem no mapa.
+ * Armas entram em um slot vazio; munição vai para a reserva do seu tipo.
+ */
+const LOOT_INICIAL = Object.freeze([
+    { tipo: "arma", armaId: "rifle", x: 1200, y: 500 },
+    { tipo: "arma", armaId: "smg", x: 1660, y: 700 },
+    { tipo: "arma", armaId: "escopeta", x: 1770, y: 1160 },
+    { tipo: "arma", armaId: "sniper", x: 2500, y: 1540 },
+    { tipo: "municao", tipoMunicao: "leve", quantidade: 24, x: 760, y: 590 },
+    { tipo: "municao", tipoMunicao: "rifle", quantidade: 60, x: 1260, y: 570 },
+    { tipo: "municao", tipoMunicao: "leve", quantidade: 48, x: 1710, y: 770 },
+    { tipo: "municao", tipoMunicao: "cartucho", quantidade: 18, x: 1820, y: 1230 },
+    { tipo: "municao", tipoMunicao: "pesada", quantidade: 10, x: 2560, y: 1600 }
+]);
 
 const CONFIGURACAO_PARTIDA = {
     larguraMapa: 3000,
@@ -133,8 +170,7 @@ const CONFIGURACAO_PARTIDA = {
     intervaloDanoJogador: 1000,
     velocidadeJogador: 250,
     velocidadeCorrida: 400,
-    armaInicial: "pistola",
-    // Um jogador + todos os inimigos cadastrados na lista acima.
+    distanciaColeta: 68,
     jogadoresIniciais: INIMIGOS_INICIAIS.length + 1
 };
 
@@ -143,16 +179,19 @@ let teclas;
 let balas;
 let obstaculos;
 let inimigos;
+let loots;
 let ultimaDirecao = "baixo";
-let armaAtual = CONFIGURACAO_PARTIDA.armaInicial;
-let ultimoTiro = 0;
+let ultimoTiro = Number.NEGATIVE_INFINITY;
 let ultimoDanoJogador = Number.NEGATIVE_INFINITY;
 let vidaJogador = CONFIGURACAO_PARTIDA.vidaInicialJogador;
 let eliminacoes = 0;
 let jogadoresVivos = CONFIGURACAO_PARTIDA.jogadoresIniciais;
+let inventarioArmas;
+let recargaAtual = null;
+let lootProximo = null;
 let jogoEncerrado = false;
+let temporizadorFeedback;
 
-// Elementos da interface. Os IDs ficam concentrados aqui para facilitar futuras mudanças no HTML.
 const interfacePartida = {
     vida: document.getElementById("vida-atual"),
     barraVida: document.getElementById("barra-vida"),
@@ -162,7 +201,16 @@ const interfacePartida = {
     eliminacoesFinais: document.getElementById("eliminacoes-finais"),
     armaAtual: document.getElementById("arma-atual"),
     estatisticasArma: document.getElementById("estatisticas-arma"),
-    slotsArmas: document.querySelectorAll("[data-arma]"),
+    municaoPente: document.getElementById("municao-pente"),
+    municaoPenteMaximo: document.getElementById("municao-pente-maximo"),
+    municaoReserva: document.getElementById("municao-reserva"),
+    statusRecarga: document.getElementById("status-recarga"),
+    progressoRecarga: document.getElementById("progresso-recarga"),
+    slotsArmas: [...document.querySelectorAll("[data-slot]")],
+    avisoLoot: document.getElementById("aviso-loot"),
+    lootNome: document.getElementById("loot-nome"),
+    lootDescricao: document.getElementById("loot-descricao"),
+    feedback: document.getElementById("feedback-partida"),
     telaDerrota: document.getElementById("tela-derrota"),
     botaoReiniciar: document.getElementById("botao-reiniciar"),
     botaoLobby: document.getElementById("botao-lobby")
@@ -201,6 +249,7 @@ function criarJogo() {
     configurarMundo(this);
     criarObstaculos(this);
     criarJogador(this);
+    criarLootInicial(this);
     criarInimigosIniciais(this);
     jogadoresVivos = inimigos.countActive(true) + 1;
     atualizarHUD();
@@ -208,8 +257,29 @@ function criarJogo() {
     criarAnimacoes(this);
     configurarControles(this);
 
-    // A câmera acompanha o jogador durante toda a partida.
     this.cameras.main.startFollow(jogador);
+}
+
+function criarInventarioInicial() {
+    const pentes = {};
+
+    Object.keys(ARMAS).forEach((armaId) => {
+        pentes[armaId] = 0;
+    });
+
+    pentes.pistola = ARMAS.pistola.capacidadePente;
+
+    return {
+        slots: ["pistola", null, null, null, null],
+        indiceAtivo: 0,
+        pentes,
+        reserva: {
+            leve: 36,
+            rifle: 0,
+            cartucho: 0,
+            pesada: 0
+        }
+    };
 }
 
 function resetarEstadoDaPartida() {
@@ -218,10 +288,13 @@ function resetarEstadoDaPartida() {
     jogadoresVivos = CONFIGURACAO_PARTIDA.jogadoresIniciais;
     ultimoDanoJogador = Number.NEGATIVE_INFINITY;
     ultimoTiro = Number.NEGATIVE_INFINITY;
-    armaAtual = CONFIGURACAO_PARTIDA.armaInicial;
+    inventarioArmas = criarInventarioInicial();
+    recargaAtual = null;
+    lootProximo = null;
     jogoEncerrado = false;
 
     esconderTelaDerrota();
+    esconderAvisoLoot();
     atualizarHUD();
 }
 
@@ -265,6 +338,55 @@ function criarJogador(cena) {
     cena.physics.add.collider(jogador, obstaculos);
 }
 
+function criarLootInicial(cena) {
+    loots = cena.add.group();
+
+    LOOT_INICIAL.forEach((dadosLoot) => {
+        if (dadosLoot.tipo === "arma") {
+            criarLootArma(cena, dadosLoot);
+            return;
+        }
+
+        criarLootMunicao(cena, dadosLoot);
+    });
+}
+
+function criarLootArma(cena, { armaId, x, y }) {
+    const arma = ARMAS[armaId];
+    const item = cena.add.rectangle(x, y, 38, 18, arma.corProjetil);
+    item.setStrokeStyle(2, 0xffffff, 0.78);
+    item.setData("tipoLoot", "arma");
+    item.setData("armaId", armaId);
+    item.setData("nome", arma.nome);
+    item.setData("descricao", "ARMA");
+    item.setData("rotulo", criarRotuloLoot(cena, x, y, arma.nome, arma.corProjetil));
+    loots.add(item);
+}
+
+function criarLootMunicao(cena, { tipoMunicao, quantidade, x, y }) {
+    const municao = TIPOS_MUNICAO[tipoMunicao];
+    const item = cena.add.circle(x, y, 11, municao.cor);
+    item.setStrokeStyle(2, 0xffffff, 0.72);
+    item.setData("tipoLoot", "municao");
+    item.setData("tipoMunicao", tipoMunicao);
+    item.setData("quantidade", quantidade);
+    item.setData("nome", `+${quantidade} ${municao.nome}`);
+    item.setData("descricao", "MUNIÇÃO");
+    item.setData("rotulo", criarRotuloLoot(cena, x, y, `+${quantidade}`, municao.cor));
+    loots.add(item);
+}
+
+function criarRotuloLoot(cena, x, y, texto, cor) {
+    return cena.add.text(x, y - 25, texto, {
+        color: "#ffffff",
+        fontFamily: "Arial",
+        fontSize: "10px",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3
+    }).setOrigin(0.5).setTint(cor);
+}
+
 function criarInimigosIniciais(cena) {
     inimigos = cena.physics.add.group();
 
@@ -291,7 +413,6 @@ function criarInimigo(cena, tipoId, x, y) {
     inimigo.setData("velocidade", tipo.velocidade);
     inimigo.setData("alcanceDeteccao", tipo.alcanceDeteccao);
 
-    // O rótulo facilita enxergar qual tipo de inimigo está sendo testado.
     const rotulo = cena.add.text(x, y - tipo.raio - 14, tipo.nome, {
         color: "#ffffff",
         fontFamily: "Arial",
@@ -306,11 +427,8 @@ function criarInimigo(cena, tipoId, x, y) {
 }
 
 function configurarColisoes(cena) {
-    // Passo 24 e 25: o contato causa dano no jogador, com intervalo para não esvaziar a vida instantaneamente.
     cena.physics.add.overlap(jogador, inimigos, (_jogador, inimigo) => causarDanoNoJogador(cena, inimigo));
     cena.physics.add.collider(inimigos, obstaculos);
-
-    // Passos 19 a 21 e 30: cada tiro remove vida do inimigo e soma uma eliminação ao destruí-lo.
     cena.physics.add.overlap(balas, inimigos, causarDanoNoInimigo);
 
     cena.physics.add.collider(balas, obstaculos, (objeto1, objeto2) => {
@@ -321,7 +439,6 @@ function configurarColisoes(cena) {
         }
     });
 
-    // Destrói balas que saem dos limites do mapa.
     cena.physics.world.on("worldbounds", (body) => {
         if (balas.contains(body.gameObject)) {
             body.gameObject.destroy();
@@ -355,6 +472,8 @@ function configurarControles(cena) {
         direita: "D",
         correr: "SHIFT",
         atirar: "SPACE",
+        recarregar: "R",
+        interagir: "E",
         arma1: Phaser.Input.Keyboard.KeyCodes.ONE,
         arma2: Phaser.Input.Keyboard.KeyCodes.TWO,
         arma3: Phaser.Input.Keyboard.KeyCodes.THREE,
@@ -370,6 +489,8 @@ function atualizarJogo() {
 
     movimentarJogador();
     atualizarTrocaDeArma();
+    atualizarRecarga(this);
+    atualizarLoot();
     atualizarDisparo(this);
     atualizarInimigos(this);
 }
@@ -431,42 +552,144 @@ function atualizarAnimacaoJogador(movendoHorizontal, movendoVertical) {
     jogador.setFrame(quadrosParados[ultimaDirecao]);
 }
 
-/*
- * Seleção temporária para testar os passos 34 a 38.
- * Inventário, slots reais e loot serão construídos apenas nos passos 46 a 53.
- */
+/* PASSOS 46 e 47 — Teclas 1–5 selecionam apenas slots ocupados. */
 function atualizarTrocaDeArma() {
-    const selecoes = [
-        [teclas.arma1, "pistola"],
-        [teclas.arma2, "rifle"],
-        [teclas.arma3, "smg"],
-        [teclas.arma4, "escopeta"],
-        [teclas.arma5, "sniper"]
-    ];
+    const selecoes = [teclas.arma1, teclas.arma2, teclas.arma3, teclas.arma4, teclas.arma5];
 
-    selecoes.forEach(([tecla, idArma]) => {
+    selecoes.forEach((tecla, indice) => {
         if (Phaser.Input.Keyboard.JustDown(tecla)) {
-            armaAtual = idArma;
-            ultimoTiro = Number.NEGATIVE_INFINITY;
-            atualizarHUD();
+            selecionarSlotDeArma(indice);
         }
     });
 }
 
+function selecionarSlotDeArma(indice) {
+    const armaId = inventarioArmas.slots[indice];
+
+    if (!armaId) {
+        mostrarFeedback(`SLOT ${indice + 1} VAZIO — PEGUE UMA ARMA`);
+        return;
+    }
+
+    if (indice === inventarioArmas.indiceAtivo) {
+        return;
+    }
+
+    cancelarRecarga();
+    inventarioArmas.indiceAtivo = indice;
+    ultimoTiro = Number.NEGATIVE_INFINITY;
+    atualizarHUD();
+    mostrarFeedback(`${ARMAS[armaId].nome} EQUIPADA`);
+}
+
+function obterArmaAtualId() {
+    return inventarioArmas.slots[inventarioArmas.indiceAtivo];
+}
+
+/* PASSOS 44 e 45 — R inicia e conclui a recarga após o tempo da arma. */
+function atualizarRecarga(cena) {
+    if (recargaAtual) {
+        atualizarInterfaceRecarga(cena.time.now);
+
+        if (cena.time.now >= recargaAtual.terminaEm) {
+            concluirRecarga();
+        }
+
+        return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(teclas.recarregar)) {
+        iniciarRecarga(cena);
+    }
+}
+
+function iniciarRecarga(cena) {
+    const armaId = obterArmaAtualId();
+
+    if (!armaId) {
+        return;
+    }
+
+    const arma = ARMAS[armaId];
+    const penteAtual = inventarioArmas.pentes[armaId];
+    const reservaAtual = inventarioArmas.reserva[arma.tipoMunicao];
+
+    if (penteAtual >= arma.capacidadePente) {
+        mostrarFeedback("PENTE JÁ ESTÁ CHEIO");
+        return;
+    }
+
+    if (reservaAtual <= 0) {
+        mostrarFeedback(`SEM ${TIPOS_MUNICAO[arma.tipoMunicao].nome}`);
+        return;
+    }
+
+    recargaAtual = {
+        armaId,
+        inicioEm: cena.time.now,
+        terminaEm: cena.time.now + arma.tempoRecarga,
+        duracao: arma.tempoRecarga
+    };
+
+    atualizarHUD();
+}
+
+function concluirRecarga() {
+    const arma = ARMAS[recargaAtual.armaId];
+    const espacosNoPente = arma.capacidadePente - inventarioArmas.pentes[recargaAtual.armaId];
+    const quantidadeTransferida = Math.min(espacosNoPente, inventarioArmas.reserva[arma.tipoMunicao]);
+
+    inventarioArmas.pentes[recargaAtual.armaId] += quantidadeTransferida;
+    inventarioArmas.reserva[arma.tipoMunicao] -= quantidadeTransferida;
+    recargaAtual = null;
+    atualizarHUD();
+    mostrarFeedback("RECARGA CONCLUÍDA");
+}
+
+function cancelarRecarga() {
+    if (!recargaAtual) {
+        return;
+    }
+
+    recargaAtual = null;
+    atualizarHUD();
+    mostrarFeedback("RECARGA CANCELADA");
+}
+
 function atualizarDisparo(cena) {
-    const arma = ARMAS[armaAtual];
+    if (recargaAtual) {
+        return;
+    }
+
+    const armaId = obterArmaAtualId();
+
+    if (!armaId) {
+        return;
+    }
+
+    const arma = ARMAS[armaId];
     const apertouGatilho = arma.automatico
         ? teclas.atirar.isDown
         : Phaser.Input.Keyboard.JustDown(teclas.atirar);
-
     const podeAtirar = cena.time.now >= ultimoTiro + arma.intervaloTiro;
 
     if (!apertouGatilho || !podeAtirar) {
         return;
     }
 
+    if (inventarioArmas.pentes[armaId] <= 0) {
+        mostrarFeedback("PENTE VAZIO — APERTE R");
+        return;
+    }
+
     dispararArma(cena, arma);
+    inventarioArmas.pentes[armaId] -= 1;
     ultimoTiro = cena.time.now;
+    atualizarHUD();
+
+    if (inventarioArmas.pentes[armaId] === 0) {
+        mostrarFeedback("PENTE VAZIO — APERTE R");
+    }
 }
 
 function dispararArma(cena, arma) {
@@ -508,6 +731,113 @@ function criarProjetil(cena, arma, angulo) {
         Math.cos(angulo) * arma.velocidadeBala,
         Math.sin(angulo) * arma.velocidadeBala
     );
+}
+
+/* PASSOS 48 a 50 — Procurar o item mais próximo e coletar com E. */
+function atualizarLoot() {
+    const novoLootProximo = encontrarLootMaisProximo();
+
+    if (novoLootProximo !== lootProximo) {
+        lootProximo = novoLootProximo;
+
+        if (lootProximo) {
+            mostrarAvisoLoot(lootProximo);
+        } else {
+            esconderAvisoLoot();
+        }
+    }
+
+    if (lootProximo && Phaser.Input.Keyboard.JustDown(teclas.interagir)) {
+        coletarLoot(lootProximo);
+    }
+}
+
+function encontrarLootMaisProximo() {
+    let itemMaisProximo = null;
+    let menorDistancia = CONFIGURACAO_PARTIDA.distanciaColeta;
+
+    loots.children.iterate((item) => {
+        if (!item || !item.active) {
+            return;
+        }
+
+        const distancia = Phaser.Math.Distance.Between(jogador.x, jogador.y, item.x, item.y);
+
+        if (distancia <= menorDistancia) {
+            itemMaisProximo = item;
+            menorDistancia = distancia;
+        }
+    });
+
+    return itemMaisProximo;
+}
+
+function coletarLoot(item) {
+    if (item.getData("tipoLoot") === "arma") {
+        coletarArma(item);
+        return;
+    }
+
+    coletarMunicao(item);
+}
+
+function coletarArma(item) {
+    const armaId = item.getData("armaId");
+    const arma = ARMAS[armaId];
+
+    if (inventarioArmas.slots.includes(armaId)) {
+        mostrarFeedback(`VOCÊ JÁ POSSUI ${arma.nome}`);
+        return;
+    }
+
+    const slotVazio = inventarioArmas.slots.findIndex((slot) => slot === null);
+
+    if (slotVazio === -1) {
+        mostrarFeedback("SLOTS CHEIOS");
+        return;
+    }
+
+    inventarioArmas.slots[slotVazio] = armaId;
+    inventarioArmas.pentes[armaId] = arma.capacidadePente;
+    inventarioArmas.indiceAtivo = slotVazio;
+    ultimoTiro = Number.NEGATIVE_INFINITY;
+    removerLoot(item);
+    atualizarHUD();
+    mostrarFeedback(`${arma.nome} COLETADA — PENTE CHEIO`);
+}
+
+function coletarMunicao(item) {
+    const tipoMunicao = item.getData("tipoMunicao");
+    const quantidade = item.getData("quantidade");
+
+    inventarioArmas.reserva[tipoMunicao] += quantidade;
+    removerLoot(item);
+    atualizarHUD();
+    mostrarFeedback(`+${quantidade} ${TIPOS_MUNICAO[tipoMunicao].nome}`);
+}
+
+function removerLoot(item) {
+    const rotulo = item.getData("rotulo");
+
+    if (rotulo) {
+        rotulo.destroy();
+    }
+
+    item.destroy();
+    lootProximo = null;
+    esconderAvisoLoot();
+}
+
+function mostrarAvisoLoot(item) {
+    interfacePartida.lootNome.textContent = `PEGAR ${item.getData("nome")}`;
+    interfacePartida.lootDescricao.textContent = item.getData("descricao");
+    interfacePartida.avisoLoot.classList.add("visivel");
+    interfacePartida.avisoLoot.setAttribute("aria-hidden", "false");
+}
+
+function esconderAvisoLoot() {
+    interfacePartida.avisoLoot.classList.remove("visivel");
+    interfacePartida.avisoLoot.setAttribute("aria-hidden", "true");
 }
 
 function atualizarInimigos(cena) {
@@ -559,7 +889,7 @@ function causarDanoNoInimigo(objeto1, objeto2) {
         return;
     }
 
-    // Leia o dano antes de destruir a bala: destroy() remove seus dados no Phaser.
+    // O dano precisa ser lido antes de destruir a bala.
     const danoDaBala = Number(bala.getData("dano"));
     bala.destroy();
 
@@ -584,7 +914,6 @@ function causarDanoNoInimigo(objeto1, objeto2) {
     }
 }
 
-/* Passo 29 e 30: um único lugar atualiza todos os números mostrados na tela. */
 function atualizarHUD() {
     const percentualVida = (vidaJogador / CONFIGURACAO_PARTIDA.vidaInicialJogador) * 100;
 
@@ -599,15 +928,85 @@ function atualizarHUD() {
 }
 
 function atualizarHUDDaArma() {
-    const arma = ARMAS[armaAtual];
+    const armaId = obterArmaAtualId();
+
+    if (!armaId) {
+        interfacePartida.armaAtual.textContent = "SEM ARMA";
+        interfacePartida.estatisticasArma.textContent = "ENCONTRE UMA ARMA NO MAPA";
+        interfacePartida.municaoPente.textContent = "—";
+        interfacePartida.municaoPenteMaximo.textContent = "";
+        interfacePartida.municaoReserva.textContent = "—";
+        atualizarSlots();
+        atualizarInterfaceRecarga();
+        return;
+    }
+
+    const arma = ARMAS[armaId];
+    const reserva = inventarioArmas.reserva[arma.tipoMunicao];
 
     interfacePartida.armaAtual.textContent = arma.nome;
     interfacePartida.estatisticasArma.textContent =
         `${arma.tipoDisparo} · DANO ${arma.dano} · CADÊNCIA ${arma.cadencia}`;
+    interfacePartida.municaoPente.textContent = inventarioArmas.pentes[armaId];
+    interfacePartida.municaoPenteMaximo.textContent = `/ ${arma.capacidadePente}`;
+    interfacePartida.municaoReserva.textContent = reserva;
+    atualizarSlots();
+    atualizarInterfaceRecarga();
+}
 
+function atualizarSlots() {
     interfacePartida.slotsArmas.forEach((slot) => {
-        slot.classList.toggle("slot-arma--ativa", slot.dataset.arma === armaAtual);
+        const indice = Number(slot.dataset.slot);
+        const armaId = inventarioArmas.slots[indice];
+        const nome = slot.querySelector("[data-slot-nome]");
+        const municao = slot.querySelector("[data-slot-municao]");
+        const ocupado = Boolean(armaId);
+
+        slot.classList.toggle("slot-arma--vazia", !ocupado);
+        slot.classList.toggle("slot-arma--ativa", indice === inventarioArmas.indiceAtivo && ocupado);
+
+        if (!ocupado) {
+            nome.textContent = "VAZIO";
+            municao.textContent = "—";
+            slot.setAttribute("aria-label", `Slot ${indice + 1}: vazio`);
+            return;
+        }
+
+        const arma = ARMAS[armaId];
+        nome.textContent = arma.nome;
+        municao.textContent = `${inventarioArmas.pentes[armaId]} / ${inventarioArmas.reserva[arma.tipoMunicao]}`;
+        slot.setAttribute("aria-label", `Slot ${indice + 1}: ${arma.nome}`);
     });
+}
+
+function atualizarInterfaceRecarga(agora) {
+    const recarregando = Boolean(recargaAtual);
+    interfacePartida.statusRecarga.classList.toggle("visivel", recarregando);
+    interfacePartida.statusRecarga.setAttribute("aria-hidden", String(!recarregando));
+
+    if (!recarregando) {
+        interfacePartida.progressoRecarga.style.width = "0%";
+        return;
+    }
+
+    const tempoAtual = Number.isFinite(agora) ? agora : recargaAtual.inicioEm;
+    const progresso = Phaser.Math.Clamp(
+        (tempoAtual - recargaAtual.inicioEm) / recargaAtual.duracao,
+        0,
+        1
+    );
+
+    interfacePartida.progressoRecarga.style.width = `${progresso * 100}%`;
+}
+
+function mostrarFeedback(texto) {
+    interfacePartida.feedback.textContent = texto;
+    interfacePartida.feedback.classList.add("visivel");
+    clearTimeout(temporizadorFeedback);
+
+    temporizadorFeedback = window.setTimeout(() => {
+        interfacePartida.feedback.classList.remove("visivel");
+    }, 1600);
 }
 
 function mostrarTelaDerrota(cena) {
@@ -630,7 +1029,6 @@ function esconderTelaDerrota() {
     interfacePartida.telaDerrota.setAttribute("aria-hidden", "true");
 }
 
-// Passos 27 e 28: reinicia a arena ou volta ao lobby inicial.
 interfacePartida.botaoReiniciar.addEventListener("click", () => window.location.reload());
 interfacePartida.botaoLobby.addEventListener("click", () => {
     window.location.href = "index.html";
