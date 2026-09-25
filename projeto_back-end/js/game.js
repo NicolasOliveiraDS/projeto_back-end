@@ -1,324 +1,418 @@
-    let jogador;
-    let teclas;
-    let ultimaDirecao = "baixo";
-    let balas;
-    let obstaculos;
-    let modoDisparo = "automatico";
-    let ultimoTiro = 0;
-    const intervaloTiro = 150;
+"use strict";
 
+/*
+ * CENTRAL DE AJUSTES DA PARTIDA
+ * Altere estes valores para equilibrar o jogo sem procurar números pelo arquivo.
+ */
+const CONFIGURACAO_PARTIDA = {
+    larguraMapa: 3000,
+    alturaMapa: 2000,
+    vidaInicialJogador: 100,
+    danoContatoInimigo: 10,
+    intervaloDanoJogador: 1000,
+    vidaInimigo: 100,
+    danoBala: 25,
+    intervaloTiro: 150,
+    velocidadeJogador: 250,
+    velocidadeCorrida: 400,
+    velocidadeInimigo: 120,
+    alcanceDeteccaoInimigo: 700,
+    velocidadeBala: 600,
+    // Hoje há 1 jogador e 1 inimigo. Aumente ao criar novos inimigos no passo 31.
+    jogadoresIniciais: 2
+};
 
-    const config = {
+let jogador;
+let teclas;
+let balas;
+let obstaculos;
+let inimigos;
+let ultimaDirecao = "baixo";
+let modoDisparo = "automatico";
+let ultimoTiro = 0;
+let ultimoDanoJogador = Number.NEGATIVE_INFINITY;
+let vidaJogador = CONFIGURACAO_PARTIDA.vidaInicialJogador;
+let eliminacoes = 0;
+let jogadoresVivos = CONFIGURACAO_PARTIDA.jogadoresIniciais;
+let jogoEncerrado = false;
+
+// Elementos da interface. Os IDs ficam concentrados aqui para facilitar futuras mudanças no HTML.
+const interfacePartida = {
+    vida: document.getElementById("vida-atual"),
+    barraVida: document.getElementById("barra-vida"),
+    cartaoVida: document.querySelector(".hud__item--vida"),
+    jogadoresVivos: document.getElementById("jogadores-vivos"),
+    eliminacoes: document.getElementById("eliminacoes-atual"),
+    eliminacoesFinais: document.getElementById("eliminacoes-finais"),
+    telaDerrota: document.getElementById("tela-derrota"),
+    botaoReiniciar: document.getElementById("botao-reiniciar"),
+    botaoLobby: document.getElementById("botao-lobby")
+};
+
+const config = {
     type: Phaser.AUTO,
-
     width: 1280,
     height: 720,
-
     parent: "game-container",
-
     backgroundColor: "#1b2338",
-
-        physics: {
+    physics: {
         default: "arcade",
-
-            arcade: {
-                debug: false
-            }
-        },
-
+        arcade: {
+            debug: false
+        }
+    },
     scene: {
         preload: carregarArquivos,
         create: criarJogo,
         update: atualizarJogo
     }
-    };
+};
 
+const jogo = new Phaser.Game(config);
 
-    const jogo = new Phaser.Game(config);
+function carregarArquivos() {
+    this.load.spritesheet("jogador", "assets/images/jogador.png", {
+        frameWidth: 64,
+        frameHeight: 64
+    });
+}
 
-    function carregarArquivos() {
-        this.load.spritesheet(
-            "jogador",
-            "assets/images/jogador.png",
-            {frameWidth:64,
-                frameHeight:64
-            }
-        )
+function criarJogo() {
+    resetarEstadoDaPartida();
+    configurarMundo(this);
+    criarObstaculos(this);
+    criarJogador(this);
+    criarInimigo(this, 1100, 600, 30, 0x9b59b6);
+    configurarColisoes(this);
+    criarAnimacoes(this);
+    configurarControles(this);
+
+    // A câmera acompanha o jogador durante toda a partida.
+    this.cameras.main.startFollow(jogador);
+}
+
+function resetarEstadoDaPartida() {
+    vidaJogador = CONFIGURACAO_PARTIDA.vidaInicialJogador;
+    eliminacoes = 0;
+    jogadoresVivos = CONFIGURACAO_PARTIDA.jogadoresIniciais;
+    ultimoDanoJogador = Number.NEGATIVE_INFINITY;
+    ultimoTiro = 0;
+    modoDisparo = "automatico";
+    jogoEncerrado = false;
+
+    esconderTelaDerrota();
+    atualizarHUD();
+}
+
+function configurarMundo(cena) {
+    cena.cameras.main.setBounds(0, 0, CONFIGURACAO_PARTIDA.larguraMapa, CONFIGURACAO_PARTIDA.alturaMapa);
+    cena.physics.world.setBounds(0, 0, CONFIGURACAO_PARTIDA.larguraMapa, CONFIGURACAO_PARTIDA.alturaMapa);
+
+    const graficos = cena.add.graphics();
+    graficos.lineStyle(1, 0x2f3b5f, 0.5);
+
+    for (let x = 0; x <= CONFIGURACAO_PARTIDA.larguraMapa; x += 100) {
+        graficos.lineBetween(x, 0, x, CONFIGURACAO_PARTIDA.alturaMapa);
     }
 
+    for (let y = 0; y <= CONFIGURACAO_PARTIDA.alturaMapa; y += 100) {
+        graficos.lineBetween(0, y, CONFIGURACAO_PARTIDA.larguraMapa, y);
+    }
+}
 
-    function criarJogo() {
+function criarObstaculos(cena) {
+    obstaculos = cena.add.group();
 
-    // Define o tamanho total do mapa
-    this.cameras.main.setBounds(0, 0, 3000, 2000);
+    const dadosObstaculos = [
+        [900, 360, 220, 120, 0xff3b30],
+        [1400, 900, 180, 180, 0x4c5b78],
+        [2100, 1300, 300, 100, 0x596784]
+    ];
 
-    this.physics.world.setBounds(0, 0, 3000, 2000);
+    dadosObstaculos.forEach(([x, y, largura, altura, cor]) => {
+        const obstaculo = cena.add.rectangle(x, y, largura, altura, cor);
+        cena.physics.add.existing(obstaculo, true);
+        obstaculos.add(obstaculo);
+    });
+}
 
-    const graficos = this.add.graphics();
-
-        graficos.lineStyle(1, 0x2f3b5f, 0.5);
-
-        for (let x = 0; x <= 3000; x += 100) {
-        graficos.lineBetween(x, 0, x, 2000);
-        }
-
-        for (let y = 0; y <= 2000; y += 100) {
-        graficos.lineBetween(0, y, 3000, y);
-        }
-
-    obstaculos = this.add.group();
-
-    const obstaculo1 = this.add.rectangle(
-    900,
-    360,
-    220,
-    120,
-    0xff3b30
-    );
-
-    const obstaculo2 = this.add.rectangle(
-    1400,
-    900,
-    180,
-    180,
-    0x4c5b78
-    );
-
-    const obstaculo3 = this.add.rectangle(
-    2100,
-    1300,
-    300,
-    100,
-    0x596784
-    );
-
-    this.physics.add.existing(obstaculo1, true);
-    this.physics.add.existing(obstaculo2, true);
-    this.physics.add.existing(obstaculo3, true);
-
-    obstaculos.addMultiple([
-    obstaculo1,
-    obstaculo2,
-    obstaculo3
-    ]);
-
-    // Cria o jogador no centro inicial da tela
-    jogador = this.physics.add.sprite(
-    640,
-    360,
-    "jogador",
-    0
-    );
-
+function criarJogador(cena) {
+    jogador = cena.physics.add.sprite(640, 360, "jogador", 0);
     jogador.setCollideWorldBounds(true);
+    balas = cena.physics.add.group();
 
-    this.physics.add.collider(jogador, obstaculos);
+    cena.physics.add.collider(jogador, obstaculos);
+}
 
-    balas = this.physics.add.group();
+/*
+ * PASSO 31: para adicionar mais inimigos, chame esta função novamente em criarJogo.
+ * Exemplo: criarInimigo(this, 1600, 900, 24, 0xff9f1c);
+ */
+function criarInimigo(cena, x, y, raio, cor) {
+    if (!inimigos) {
+        inimigos = cena.physics.add.group();
+    }
 
-    this.physics.add.collider(
-        balas,
-        obstaculos,
-        function (objeto1,objeto2) {
-            if (balas.contains(objeto1)){
-                objeto1.destroy();
-            }
-            else if (balas.contains(objeto2)){
-                objeto2.destroy();
-            }
+    const inimigo = cena.add.circle(x, y, raio, cor);
+    cena.physics.add.existing(inimigo);
+    inimigo.body.setCollideWorldBounds(true);
+    inimigo.setData("vida", CONFIGURACAO_PARTIDA.vidaInimigo);
+    inimigos.add(inimigo);
+
+    return inimigo;
+}
+
+function configurarColisoes(cena) {
+    // Passo 24 e 25: o contato causa dano no jogador, com intervalo para não esvaziar a vida instantaneamente.
+    cena.physics.add.overlap(jogador, inimigos, () => causarDanoNoJogador(cena));
+    cena.physics.add.collider(inimigos, obstaculos);
+
+    // Passos 19 a 21 e 30: cada tiro remove vida do inimigo e soma uma eliminação ao destruí-lo.
+    cena.physics.add.overlap(balas, inimigos, causarDanoNoInimigo);
+
+    cena.physics.add.collider(balas, obstaculos, (objeto1, objeto2) => {
+        const bala = balas.contains(objeto1) ? objeto1 : objeto2;
+
+        if (bala && bala.active) {
+            bala.destroy();
         }
-    );
-
-    // Faz a câmera acompanhar o jogador
-    this.cameras.main.startFollow(jogador);
-
-    //fazendo animação do jogador
-    this.anims.create({
-        key: "andar-baixo",
-        frames: this.anims.generateFrameNumbers("jogador",{
-            start: 0,
-            end: 3
-        }),
-        frameRate: 8,
-        repeat: -1
     });
 
-    this.anims.create({
-        key: "andar-cima",
-        frames: this.anims.generateFrameNumbers("jogador",{
-            start: 4,
-            end: 7
-        }),
-        frameRate: 8,
-        repeat:-1
+    // Destrói balas que saem dos limites do mapa.
+    cena.physics.world.on("worldbounds", (body) => {
+        if (balas.contains(body.gameObject)) {
+            body.gameObject.destroy();
+        }
     });
+}
 
-    this.anims.create({
-        key: "andar-esquerda",
-        frames: this.anims.generateFrameNumbers("jogador",{
-            start: 8,
-            end: 11
-        }),
-        frameRate: 8,
-        repeat: -1
+function criarAnimacoes(cena) {
+    const animacoes = [
+        ["andar-baixo", 0, 3],
+        ["andar-cima", 4, 7],
+        ["andar-esquerda", 8, 11],
+        ["andar-direita", 12, 15]
+    ];
+
+    animacoes.forEach(([chave, inicio, fim]) => {
+        cena.anims.create({
+            key: chave,
+            frames: cena.anims.generateFrameNumbers("jogador", { start: inicio, end: fim }),
+            frameRate: 8,
+            repeat: -1
+        });
     });
+}
 
-    this.anims.create({
-        key: "andar-direita",
-        frames: this.anims.generateFrameNumbers("jogador",{
-            start: 12,
-            end: 15
-        }),
-        frameRate: 8,
-        repeat: -1
-    });
-
-
-    // Configura as teclas
-    teclas = this.input.keyboard.addKeys({
+function configurarControles(cena) {
+    teclas = cena.input.keyboard.addKeys({
         cima: "W",
         baixo: "S",
         esquerda: "A",
         direita: "D",
         correr: "SHIFT",
         atirar: "SPACE",
-        trocarDisparo : "Q"
+        trocarDisparo: "Q"
     });
+}
 
-    //Assim, quando uma bala chegar no limite do mapa, ela será destruída.
-    this.physics.world.on("worldbounds", function(body) {
-        if (balas.contains(body.gameObject)){
-            body.gameObject.destroy();
-        }
-    });
-
+function atualizarJogo() {
+    if (jogoEncerrado) {
+        return;
     }
 
-        function atualizarJogo() {
-            const velocidade = teclas.correr.isDown ? 400 : 250;
+    movimentarJogador();
+    atualizarModoDisparo(this);
+    atualizarInimigos(this);
+}
 
-            jogador.body.setVelocity(0);
+function movimentarJogador() {
+    const velocidade = teclas.correr.isDown
+        ? CONFIGURACAO_PARTIDA.velocidadeCorrida
+        : CONFIGURACAO_PARTIDA.velocidadeJogador;
 
-            let movendoHorizontal = false;
-            let movendoVertical = false;
+    jogador.body.setVelocity(0, 0);
 
-            if (teclas.cima.isDown) {
-                jogador.body.setVelocityY(-velocidade);
-                ultimaDirecao = "cima";
-                movendoVertical = true;
-            }
+    let movendoHorizontal = false;
+    let movendoVertical = false;
 
-            else if (teclas.baixo.isDown) {
-                jogador.body.setVelocityY(velocidade);
-                ultimaDirecao = "baixo";
-                movendoVertical = true;
-            }
+    if (teclas.cima.isDown) {
+        jogador.body.setVelocityY(-velocidade);
+        ultimaDirecao = "cima";
+        movendoVertical = true;
+    } else if (teclas.baixo.isDown) {
+        jogador.body.setVelocityY(velocidade);
+        ultimaDirecao = "baixo";
+        movendoVertical = true;
+    }
 
-            if (teclas.esquerda.isDown) {
-                jogador.body.setVelocityX(-velocidade);
-                ultimaDirecao = "esquerda";
-                movendoHorizontal = true;
-            }
+    if (teclas.esquerda.isDown) {
+        jogador.body.setVelocityX(-velocidade);
+        ultimaDirecao = "esquerda";
+        movendoHorizontal = true;
+    } else if (teclas.direita.isDown) {
+        jogador.body.setVelocityX(velocidade);
+        ultimaDirecao = "direita";
+        movendoHorizontal = true;
+    }
 
-            else if (teclas.direita.isDown) {
-                jogador.body.setVelocityX(velocidade);
-                ultimaDirecao = "direita";
-                movendoHorizontal = true;
-            }
+    jogador.body.velocity.normalize().scale(velocidade);
+    atualizarAnimacaoJogador(movendoHorizontal, movendoVertical);
+}
 
-            jogador.body.velocity.normalize().scale(velocidade);
+function atualizarAnimacaoJogador(movendoHorizontal, movendoVertical) {
+    if (movendoHorizontal) {
+        jogador.anims.play(teclas.esquerda.isDown ? "andar-esquerda" : "andar-direita", true);
+        return;
+    }
 
-            if (movendoHorizontal) {
+    if (movendoVertical) {
+        jogador.anims.play(teclas.cima.isDown ? "andar-cima" : "andar-baixo", true);
+        return;
+    }
 
-                if (teclas.esquerda.isDown) {
-                    jogador.anims.play("andar-esquerda", true);
-                } else {
-                    jogador.anims.play("andar-direita", true);
-                }
-            }
+    jogador.anims.stop();
 
-            else if (movendoVertical) {
+    const quadrosParados = {
+        baixo: 0,
+        cima: 4,
+        esquerda: 8,
+        direita: 12
+    };
 
-                if (teclas.cima.isDown) {
-                    jogador.anims.play("andar-cima", true);
-                } else {
-                    jogador.anims.play("andar-baixo", true);
-                }
-            }
+    jogador.setFrame(quadrosParados[ultimaDirecao]);
+}
 
-            else {
-                jogador.anims.stop();
+function atualizarModoDisparo(cena) {
+    if (Phaser.Input.Keyboard.JustDown(teclas.trocarDisparo)) {
+        modoDisparo = modoDisparo === "automatico" ? "semiautomatico" : "automatico";
+        console.log(`Modo de disparo: ${modoDisparo.toUpperCase()}`);
+    }
 
-                if (ultimaDirecao === "baixo") jogador.setFrame(0);
-                if (ultimaDirecao === "cima") jogador.setFrame(4);
-                if (ultimaDirecao === "esquerda") jogador.setFrame(8);
-                if (ultimaDirecao === "direita") jogador.setFrame(12);
-            }
+    if (modoDisparo === "semiautomatico" && Phaser.Input.Keyboard.JustDown(teclas.atirar)) {
+        criarDisparo(cena);
+    }
 
-            // Trocar modo de disparo com Q
-            if (Phaser.Input.Keyboard.JustDown(teclas.trocarDisparo)) {
+    if (
+        modoDisparo === "automatico" &&
+        teclas.atirar.isDown &&
+        cena.time.now > ultimoTiro + CONFIGURACAO_PARTIDA.intervaloTiro
+    ) {
+        criarDisparo(cena);
+        ultimoTiro = cena.time.now;
+    }
+}
 
-                 if (modoDisparo === "automatico") {
-                   modoDisparo = "semiautomatico";
-                   console.log("modo: SEMIAUTOMATICO");
-                }else{
-                    modoDisparo = "automatico";
-                    console.log ("modo: AUTOMATICO");
-                }
-            }
+function criarDisparo(cena) {
+    const bala = cena.add.circle(jogador.x, jogador.y, 6, 0xffff00);
+    cena.physics.add.existing(bala);
+    bala.body.setCollideWorldBounds(true);
+    bala.body.onWorldBounds = true;
+    balas.add(bala);
 
-             //Semiautomatico
-                if (modoDisparo === "semiautomatico") {
+    const velocidade = CONFIGURACAO_PARTIDA.velocidadeBala;
+    const direcoes = {
+        cima: [0, -velocidade],
+        baixo: [0, velocidade],
+        esquerda: [-velocidade, 0],
+        direita: [velocidade, 0]
+    };
 
-                    if (Phaser.Input.Keyboard.JustDown(teclas.atirar)) {
-                        criarDisparo(this);
-                    }
-                }
+    const [velocidadeX, velocidadeY] = direcoes[ultimaDirecao];
+    bala.body.setVelocity(velocidadeX, velocidadeY);
+}
 
-
-                // automatico
-                if (modoDisparo === "automatico") {
-
-                    if (
-                        teclas.atirar.isDown &&
-                        this.time.now > ultimoTiro + intervaloTiro
-                    ) {
-                        criarDisparo(this);
-                        ultimoTiro = this.time.now;
-                    }
-                }
-
+function atualizarInimigos(cena) {
+    inimigos.children.iterate((inimigo) => {
+        if (!inimigo || !inimigo.active) {
+            return;
         }
-    
-        function criarDisparo(cena) {
 
-            const bala = cena.add.circle(
-                jogador.x,
-                jogador.y,
-                6,
-                0xffff00
-            );
+        const distancia = Phaser.Math.Distance.Between(inimigo.x, inimigo.y, jogador.x, jogador.y);
 
-            cena.physics.add.existing(bala);
-
-            bala.body.setCollideWorldBounds(true);
-
-            bala.body.onWorldBounds = true;
-
-            balas.add(bala);
-
-            const velocidadeBala = 600;
-
-            if(ultimaDirecao === "cima"){
-                bala.body.setVelocityY(-velocidadeBala);
-            }
-            if(ultimaDirecao === "baixo"){
-                bala.body.setVelocityY(velocidadeBala);
-            }
-            if(ultimaDirecao === "esquerda"){
-                bala.body.setVelocityX(-velocidadeBala);
-            }
-            if(ultimaDirecao === "direita"){
-                bala.body.setVelocityX(velocidadeBala);
-            }
+        if (distancia < CONFIGURACAO_PARTIDA.alcanceDeteccaoInimigo) {
+            cena.physics.moveToObject(inimigo, jogador, CONFIGURACAO_PARTIDA.velocidadeInimigo);
+        } else {
+            inimigo.body.setVelocity(0, 0);
         }
+    });
+}
+
+function causarDanoNoJogador(cena) {
+    const podeReceberDano = cena.time.now > ultimoDanoJogador + CONFIGURACAO_PARTIDA.intervaloDanoJogador;
+
+    if (jogoEncerrado || !podeReceberDano) {
+        return;
+    }
+
+    vidaJogador = Math.max(0, vidaJogador - CONFIGURACAO_PARTIDA.danoContatoInimigo);
+    ultimoDanoJogador = cena.time.now;
+    atualizarHUD();
+    cena.cameras.main.shake(90, 0.004);
+
+    if (vidaJogador === 0) {
+        jogadoresVivos = Math.max(0, jogadoresVivos - 1);
+        atualizarHUD();
+        mostrarTelaDerrota(cena);
+    }
+}
+
+function causarDanoNoInimigo(objeto1, objeto2) {
+    const bala = balas.contains(objeto1) ? objeto1 : objeto2;
+    const inimigo = inimigos.contains(objeto1) ? objeto1 : objeto2;
+
+    if (!bala || !inimigo || !bala.active || !inimigo.active) {
+        return;
+    }
+
+    bala.destroy();
+
+    const vidaAtual = inimigo.getData("vida") - CONFIGURACAO_PARTIDA.danoBala;
+    inimigo.setData("vida", vidaAtual);
+
+    if (vidaAtual <= 0) {
+        inimigo.destroy();
+        eliminacoes += 1;
+        jogadoresVivos = Math.max(1, jogadoresVivos - 1);
+        atualizarHUD();
+    }
+}
+
+/* Passo 29 e 30: um único lugar atualiza todos os números mostrados na tela. */
+function atualizarHUD() {
+    const percentualVida = (vidaJogador / CONFIGURACAO_PARTIDA.vidaInicialJogador) * 100;
+
+    interfacePartida.vida.textContent = vidaJogador;
+    interfacePartida.barraVida.style.setProperty("--vida-percentual", `${percentualVida}%`);
+    interfacePartida.barraVida.setAttribute("aria-valuenow", vidaJogador);
+    interfacePartida.cartaoVida.classList.toggle("vida-baixa", percentualVida <= 30);
+    interfacePartida.jogadoresVivos.textContent = jogadoresVivos;
+    interfacePartida.eliminacoes.textContent = eliminacoes;
+    interfacePartida.eliminacoesFinais.textContent = eliminacoes;
+}
+
+function mostrarTelaDerrota(cena) {
+    if (jogoEncerrado) {
+        return;
+    }
+
+    jogoEncerrado = true;
+    jogador.body.setVelocity(0, 0);
+    jogador.anims.stop();
+    cena.physics.pause();
+
+    interfacePartida.telaDerrota.classList.add("visivel");
+    interfacePartida.telaDerrota.setAttribute("aria-hidden", "false");
+    interfacePartida.botaoReiniciar.focus();
+}
+
+function esconderTelaDerrota() {
+    interfacePartida.telaDerrota.classList.remove("visivel");
+    interfacePartida.telaDerrota.setAttribute("aria-hidden", "true");
+}
+
+// Passos 27 e 28: reinicia a arena ou volta ao lobby inicial.
+interfacePartida.botaoReiniciar.addEventListener("click", () => window.location.reload());
+interfacePartida.botaoLobby.addEventListener("click", () => {
+    window.location.href = "index.html";
+});

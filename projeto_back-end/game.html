@@ -1,33 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Battle Arena | Partida </title>
+    <title>Battle Arena | Partida</title>
     <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
     <main class="game">
-        <div class="hud">
-
-            <div>
+        <!-- HUD: os IDs são atualizados em tempo real por js/game.js. -->
+        <section class="hud" aria-label="Informações da partida">
+            <div class="hud__item hud__item--vida">
                 <span>VIDA</span>
-                <strong>100</strong>
+                <strong id="vida-atual" aria-live="polite">100</strong>
+                <div
+                    id="barra-vida"
+                    class="barra-vida"
+                    role="progressbar"
+                    aria-label="Vida do jogador"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="100"
+                >
+                    <span class="barra-vida__preenchimento"></span>
+                </div>
             </div>
 
-            <div>
-                <span>JOGADORES</span>
-                <strong>50</strong>
+            <div class="hud__item">
+                <span>JOGADORES VIVOS</span>
+                <strong id="jogadores-vivos" aria-live="polite">2</strong>
             </div>
 
-            <div>
+            <div class="hud__item">
                 <span>ELIMINAÇÕES</span>
-                <strong>0</strong>
+                <strong id="eliminacoes-atual" aria-live="polite">0</strong>
             </div>
-
-        </div>
+        </section>
 
         <div id="game-container"></div>
+
+        <!-- Passos 26 a 28: modal exibido quando a vida chega a zero. -->
+        <section id="tela-derrota" class="tela-derrota" aria-hidden="true" aria-labelledby="titulo-derrota">
+            <div class="tela-derrota__conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-derrota">
+                <p class="tela-derrota__aviso">VOCÊ FOI</p>
+                <h1 id="titulo-derrota">ELIMINADO</h1>
+                <p class="tela-derrota__mensagem">Sua partida chegou ao fim.</p>
+                <p class="tela-derrota__estatistica">Eliminações: <strong id="eliminacoes-finais">0</strong></p>
+
+                <div class="tela-derrota__acoes">
+                    <button id="botao-reiniciar" class="botao botao--primario" type="button">JOGAR NOVAMENTE</button>
+                    <button id="botao-lobby" class="botao" type="button">VOLTAR AO LOBBY</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
