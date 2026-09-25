@@ -559,9 +559,14 @@ function causarDanoNoInimigo(objeto1, objeto2) {
         return;
     }
 
+    // Leia o dano antes de destruir a bala: destroy() remove seus dados no Phaser.
+    const danoDaBala = Number(bala.getData("dano"));
     bala.destroy();
 
-    const danoDaBala = bala.getData("dano");
+    if (!Number.isFinite(danoDaBala) || danoDaBala <= 0) {
+        return;
+    }
+
     const vidaAtual = inimigo.getData("vida") - danoDaBala;
     inimigo.setData("vida", vidaAtual);
 
