@@ -3,6 +3,7 @@
     --cor-texto: #ffffff;
     --cor-perigo: #e32626;
     --cor-vida: #2ed573;
+    --cor-escudo: #54a0ff;
 }
 
 * {
@@ -41,21 +42,21 @@ body {
     display: none;
 }
 
-/* Passo 29: HUD exibido por cima do canvas do Phaser. */
+/* Passos 29 e 66: HUD exibido por cima do canvas do Phaser. */
 .hud {
     position: absolute;
     top: 20px;
     right: 20px;
     left: 20px;
     z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
     pointer-events: none;
 }
 
 .hud__item {
-    min-width: 145px;
+    min-width: 0;
     padding: 12px 18px;
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 10px;
@@ -78,7 +79,14 @@ body {
     font-size: 1.4rem;
 }
 
-.barra-vida {
+.hud__item--zona strong {
+    color: #d7b4ff;
+    font-size: clamp(0.85rem, 1.8vw, 1.2rem);
+    white-space: nowrap;
+}
+
+.barra-vida,
+.barra-escudo {
     width: 100%;
     height: 6px;
     margin-top: 8px;
@@ -87,13 +95,19 @@ body {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.barra-vida__preenchimento {
+.barra-vida__preenchimento,
+.barra-escudo__preenchimento {
     display: block;
     width: var(--vida-percentual, 100%);
     height: 100%;
     border-radius: inherit;
     background: var(--cor-vida);
     transition: width 180ms ease, background-color 180ms ease;
+}
+
+.barra-escudo__preenchimento {
+    width: var(--escudo-percentual, 0%);
+    background: var(--cor-escudo);
 }
 
 .hud__item--vida.vida-baixa .barra-vida__preenchimento {
@@ -289,7 +303,7 @@ body {
 }
 
 .slot-arma--ativa {
-    border-color: #54a0ff;
+    border-color: var(--cor-raridade, #54a0ff);
     background: rgba(84, 160, 255, 0.18);
     color: #ffffff;
 }
@@ -297,6 +311,91 @@ body {
 .hud-armas__ajuda {
     margin-top: 10px;
     font-size: 0.58rem;
+    letter-spacing: 0.04em;
+}
+
+/* Passos 53 a 57: contadores da mochila de cura e escudo. */
+.hud-mochila {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 10;
+    width: min(310px, calc(100vw - 40px));
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.66);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.hud-mochila__titulo,
+.hud-mochila__ajuda {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.hud-mochila__itens {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 9px;
+}
+
+.item-mochila {
+    min-width: 0;
+    padding: 7px 4px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    text-align: center;
+}
+
+.item-mochila--cura {
+    border-color: rgba(46, 213, 115, 0.55);
+}
+
+.item-mochila--escudo {
+    border-color: rgba(84, 160, 255, 0.55);
+}
+
+.item-mochila--escudo-grande {
+    border-color: rgba(95, 39, 205, 0.65);
+}
+
+.item-mochila kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: 17px;
+    height: 17px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--cor-texto);
+    font: 700 0.62rem Arial, sans-serif;
+}
+
+.item-mochila span {
+    display: block;
+    overflow: hidden;
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.53rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.item-mochila strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 1rem;
+}
+
+.hud-mochila__ajuda {
+    margin-top: 9px;
+    font-size: 0.52rem;
     letter-spacing: 0.04em;
 }
 
@@ -370,8 +469,9 @@ body {
     transform: translate(-50%, 0);
 }
 
-/* Passos 26 a 28: tela final e ações da partida. */
-.tela-derrota {
+/* Passos 26 a 28 e 71 a 75: telas finais e ações da partida. */
+.tela-derrota,
+.tela-vitoria {
     position: fixed;
     inset: 0;
     z-index: 100;
@@ -388,7 +488,14 @@ body {
     transition: opacity 280ms ease, visibility 280ms ease;
 }
 
-.tela-derrota.visivel {
+.tela-vitoria {
+    background:
+        radial-gradient(circle at center, rgba(90, 195, 125, 0.28), rgba(0, 0, 0, 0.9) 72%),
+        rgba(0, 0, 0, 0.5);
+}
+
+.tela-derrota.visivel,
+.tela-vitoria.visivel {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -399,7 +506,8 @@ body {
     text-align: center;
 }
 
-.tela-derrota.visivel .tela-derrota__conteudo {
+.tela-derrota.visivel .tela-derrota__conteudo,
+.tela-vitoria.visivel .tela-derrota__conteudo {
     animation: entrada-eliminado 420ms cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
 }
 
@@ -411,7 +519,8 @@ body {
     letter-spacing: 0.45em;
 }
 
-.tela-derrota h1 {
+.tela-derrota h1,
+.tela-vitoria h1 {
     color: var(--cor-perigo);
     font-size: clamp(4rem, 14vw, 10rem);
     font-style: italic;
@@ -421,16 +530,38 @@ body {
     text-shadow: 4px 4px 0 #4c0707, 8px 8px 0 rgba(0, 0, 0, 0.45);
 }
 
+.tela-vitoria h1 {
+    color: #f6c945;
+    text-shadow: 4px 4px 0 #816414, 8px 8px 0 rgba(0, 0, 0, 0.45);
+}
+
 .tela-derrota__mensagem {
     margin: 20px 0 8px;
     color: rgba(255, 255, 255, 0.78);
     font-size: clamp(0.95rem, 2vw, 1.15rem);
 }
 
-.tela-derrota__estatistica {
+.tela-derrota__estatisticas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
     margin-bottom: 28px;
+}
+
+.tela-derrota__estatisticas p {
+    padding: 10px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
     color: rgba(255, 255, 255, 0.9);
-    font-size: 0.95rem;
+    font-size: 0.78rem;
+}
+
+.tela-derrota__estatisticas strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--cor-texto);
+    font-size: 1.15rem;
 }
 
 .tela-derrota__acoes {
@@ -455,6 +586,12 @@ body {
 .botao--primario {
     border-color: var(--cor-perigo);
     background: var(--cor-perigo);
+}
+
+.botao--vitoria {
+    border-color: #f6c945;
+    background: #f6c945;
+    color: #16120b;
 }
 
 .botao:hover,
@@ -483,6 +620,7 @@ body {
         top: 12px;
         right: 12px;
         left: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 8px;
     }
 
@@ -507,18 +645,34 @@ body {
         padding: 10px;
     }
 
+    .hud-mochila {
+        bottom: 202px;
+        left: 12px;
+        width: calc(100vw - 24px);
+        padding: 10px;
+    }
+
     .aviso-loot {
-        bottom: 210px;
+        bottom: 320px;
     }
 
     .feedback-partida {
-        top: 92px;
+        top: 152px;
         max-width: calc(100vw - 24px);
         text-align: center;
     }
 
     .tela-derrota__aviso {
         letter-spacing: 0.25em;
+    }
+
+    .tela-derrota__estatisticas {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .tela-derrota__estatisticas p {
+        padding: 7px;
     }
 
     .botao {

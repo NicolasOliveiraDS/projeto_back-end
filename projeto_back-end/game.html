@@ -34,6 +34,23 @@
                 </div>
             </div>
 
+            <!-- Passos 56 e 57: o escudo absorve dano antes da vida. -->
+            <div class="hud__item hud__item--escudo">
+                <span>ESCUDO</span>
+                <strong id="escudo-atual" aria-live="polite">0</strong>
+                <div
+                    id="barra-escudo"
+                    class="barra-escudo"
+                    role="progressbar"
+                    aria-label="Escudo do jogador"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                >
+                    <span class="barra-escudo__preenchimento"></span>
+                </div>
+            </div>
+
             <div class="hud__item">
                 <span>JOGADORES VIVOS</span>
                 <strong id="jogadores-vivos" aria-live="polite">2</strong>
@@ -42,6 +59,12 @@
             <div class="hud__item">
                 <span>ELIMINAÇÕES</span>
                 <strong id="eliminacoes-atual" aria-live="polite">0</strong>
+            </div>
+
+            <!-- Passos 66 e 67: informa a contagem antes da redução e o raio atual. -->
+            <div class="hud__item hud__item--zona">
+                <span>ZONA</span>
+                <strong id="zona-atual" aria-live="polite">REDUZ EM 15s</strong>
             </div>
         </section>
 
@@ -80,7 +103,30 @@
             <p class="hud-armas__ajuda">1–5: trocar · R: recarregar · E: pegar · ESPAÇO: disparar</p>
         </aside>
 
-        <!-- Passos 48 a 50: aparece somente perto de um item coletável. -->
+        <!-- Passos 53 a 57: itens recebidos por E e consumidos por Q, F e G. -->
+        <aside class="hud-mochila" aria-label="Itens da mochila">
+            <span class="hud-mochila__titulo">MOCHILA</span>
+            <div class="hud-mochila__itens">
+                <div class="item-mochila item-mochila--cura">
+                    <kbd>Q</kbd>
+                    <span>KIT MÉDICO</span>
+                    <strong id="quantidade-kit-medico" aria-live="polite">0</strong>
+                </div>
+                <div class="item-mochila item-mochila--escudo">
+                    <kbd>F</kbd>
+                    <span>ESCUDO P.</span>
+                    <strong id="quantidade-escudo-pequeno" aria-live="polite">0</strong>
+                </div>
+                <div class="item-mochila item-mochila--escudo-grande">
+                    <kbd>G</kbd>
+                    <span>ESCUDO G.</span>
+                    <strong id="quantidade-escudo-grande" aria-live="polite">0</strong>
+                </div>
+            </div>
+            <p class="hud-mochila__ajuda">Q: +45 vida · F: +25 escudo · G: +50 escudo</p>
+        </aside>
+
+        <!-- Passos 48 a 57: aparece somente perto de um item coletável. -->
         <section id="aviso-loot" class="aviso-loot" aria-hidden="true" role="status">
             <kbd>E</kbd>
             <span id="loot-nome">PEGAR ITEM</span>
@@ -94,11 +140,34 @@
                 <p class="tela-derrota__aviso">VOCÊ FOI</p>
                 <h1 id="titulo-derrota">ELIMINADO</h1>
                 <p class="tela-derrota__mensagem">Sua partida chegou ao fim.</p>
-                <p class="tela-derrota__estatistica">Eliminações: <strong id="eliminacoes-finais">0</strong></p>
+                <div class="tela-derrota__estatisticas" aria-label="Estatísticas da partida">
+                    <p>Tempo sobrevivido: <strong id="tempo-final-derrota">00:00</strong></p>
+                    <p>Dano causado: <strong id="dano-final-derrota">0</strong></p>
+                    <p>Eliminações: <strong id="eliminacoes-finais">0</strong></p>
+                </div>
 
                 <div class="tela-derrota__acoes">
                     <button id="botao-reiniciar" class="botao botao--primario" type="button">JOGAR NOVAMENTE</button>
                     <button id="botao-lobby" class="botao" type="button">VOLTAR AO LOBBY</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Passos 69 a 75: aparece quando todos os inimigos foram eliminados. -->
+        <section id="tela-vitoria" class="tela-vitoria" aria-hidden="true" aria-labelledby="titulo-vitoria">
+            <div class="tela-derrota__conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-vitoria">
+                <p class="tela-derrota__aviso">ÚLTIMO JOGADOR</p>
+                <h1 id="titulo-vitoria">VITÓRIA</h1>
+                <p class="tela-derrota__mensagem">Você dominou a Battle Arena.</p>
+                <div class="tela-derrota__estatisticas" aria-label="Estatísticas da vitória">
+                    <p>Tempo sobrevivido: <strong id="tempo-final-vitoria">00:00</strong></p>
+                    <p>Dano causado: <strong id="dano-final-vitoria">0</strong></p>
+                    <p>Eliminações: <strong id="eliminacoes-vitoria">0</strong></p>
+                </div>
+
+                <div class="tela-derrota__acoes">
+                    <button id="botao-reiniciar-vitoria" class="botao botao--vitoria" type="button">JOGAR NOVAMENTE</button>
+                    <button id="botao-lobby-vitoria" class="botao" type="button">VOLTAR AO LOBBY</button>
                 </div>
             </div>
         </section>
