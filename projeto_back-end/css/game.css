@@ -84,6 +84,92 @@ body {
     background: var(--cor-perigo);
 }
 
+/* Passos 33 a 40: painel da arma, separado do inventário futuro. */
+.hud-armas {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 10;
+    width: min(440px, calc(100vw - 40px));
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.66);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.hud-armas__titulo,
+.hud-armas__ajuda {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.hud-armas strong {
+    display: block;
+    margin-top: 3px;
+    font-size: 1.2rem;
+}
+
+.hud-armas__estatisticas {
+    margin: 4px 0 12px;
+    color: #b9c6dc;
+    font-size: 0.67rem;
+    font-weight: 700;
+}
+
+.hud-armas__slots {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 5px;
+}
+
+.slot-arma {
+    min-width: 0;
+    padding: 6px 3px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 5px;
+    color: rgba(255, 255, 255, 0.65);
+    text-align: center;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.slot-arma kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: 17px;
+    height: 17px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.14);
+    color: inherit;
+    font: 700 0.62rem Arial, sans-serif;
+}
+
+.slot-arma span {
+    display: block;
+    overflow: hidden;
+    font-size: 0.54rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.slot-arma--ativa {
+    border-color: #54a0ff;
+    background: rgba(84, 160, 255, 0.18);
+    color: #ffffff;
+}
+
+.hud-armas__ajuda {
+    margin-top: 10px;
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+}
+
 /* Passos 26 a 28: tela final e ações da partida. */
 .tela-derrota {
     position: fixed;
@@ -212,6 +298,13 @@ body {
 
     .hud strong {
         font-size: 1.1rem;
+    }
+
+    .hud-armas {
+        right: 12px;
+        bottom: 12px;
+        width: calc(100vw - 24px);
+        padding: 10px;
     }
 
     .tela-derrota__aviso {

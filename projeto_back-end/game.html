@@ -39,6 +39,23 @@
 
         <div id="game-container"></div>
 
+        <!-- Passos 33 a 40: painel informativo da arma escolhida pelas teclas 1 a 5. -->
+        <aside class="hud-armas" aria-label="Arma equipada">
+            <span class="hud-armas__titulo">ARMA EQUIPADA</span>
+            <strong id="arma-atual" aria-live="polite">PISTOLA</strong>
+            <p id="estatisticas-arma" class="hud-armas__estatisticas">SEMIAUTOMÁTICA · DANO 25 · CADÊNCIA BAIXA</p>
+
+            <div class="hud-armas__slots" aria-label="Armas disponíveis">
+                <div class="slot-arma" data-arma="pistola"><kbd>1</kbd><span>PISTOLA</span></div>
+                <div class="slot-arma" data-arma="rifle"><kbd>2</kbd><span>RIFLE</span></div>
+                <div class="slot-arma" data-arma="smg"><kbd>3</kbd><span>SMG</span></div>
+                <div class="slot-arma" data-arma="escopeta"><kbd>4</kbd><span>ESCOPETA</span></div>
+                <div class="slot-arma" data-arma="sniper"><kbd>5</kbd><span>SNIPER</span></div>
+            </div>
+
+            <p class="hud-armas__ajuda">1–5: trocar · ESPAÇO: disparar</p>
+        </aside>
+
         <!-- Passos 26 a 28: modal exibido quando a vida chega a zero. -->
         <section id="tela-derrota" class="tela-derrota" aria-hidden="true" aria-labelledby="titulo-derrota">
             <div class="tela-derrota__conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-derrota">

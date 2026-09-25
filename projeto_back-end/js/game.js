@@ -4,22 +4,138 @@
  * CENTRAL DE AJUSTES DA PARTIDA
  * Altere estes valores para equilibrar o jogo sem procurar números pelo arquivo.
  */
+/*
+ * PASSO 32 — Cada tipo reúne suas próprias características.
+ * Para criar outro tipo, copie um bloco e altere os valores.
+ */
+const TIPOS_INIMIGOS = Object.freeze({
+    rapido: {
+        nome: "RÁPIDO",
+        vida: 60,
+        danoContato: 7,
+        velocidade: 180,
+        alcanceDeteccao: 720,
+        raio: 18,
+        cor: 0x2ed573
+    },
+    soldado: {
+        nome: "SOLDADO",
+        vida: 100,
+        danoContato: 10,
+        velocidade: 120,
+        alcanceDeteccao: 700,
+        raio: 25,
+        cor: 0x9b59b6
+    },
+    tanque: {
+        nome: "TANQUE",
+        vida: 180,
+        danoContato: 17,
+        velocidade: 78,
+        alcanceDeteccao: 620,
+        raio: 32,
+        cor: 0xf39c12
+    },
+    bruto: {
+        nome: "BRUTO",
+        vida: 260,
+        danoContato: 26,
+        velocidade: 58,
+        alcanceDeteccao: 540,
+        raio: 38,
+        cor: 0xe74c3c
+    }
+});
+
+/*
+ * PASSO 31 — Esta lista define quem nasce no mapa e onde.
+ * Para adicionar um inimigo, inclua outra linha com tipo, x e y.
+ */
+const INIMIGOS_INICIAIS = Object.freeze([
+    { tipo: "rapido", x: 1120, y: 620 },
+    { tipo: "soldado", x: 1420, y: 610 },
+    { tipo: "rapido", x: 1760, y: 400 },
+    { tipo: "tanque", x: 1680, y: 1120 },
+    { tipo: "bruto", x: 2300, y: 1450 }
+]);
+
+/*
+ * PASSOS 33 a 40 — Catálogo de armas.
+ * Cada arma leva consigo dano, cadência e comportamento de disparo.
+ */
+const ARMAS = Object.freeze({
+    pistola: {
+        nome: "PISTOLA",
+        tipoDisparo: "SEMIAUTOMÁTICA",
+        automatico: false,
+        dano: 25,
+        intervaloTiro: 350,
+        velocidadeBala: 720,
+        projeteisPorTiro: 1,
+        dispersaoGraus: 0,
+        corProjetil: 0xffe66d,
+        cadencia: "BAIXA"
+    },
+    rifle: {
+        nome: "RIFLE",
+        tipoDisparo: "AUTOMÁTICO",
+        automatico: true,
+        dano: 30,
+        intervaloTiro: 140,
+        velocidadeBala: 900,
+        projeteisPorTiro: 1,
+        dispersaoGraus: 0,
+        corProjetil: 0x54a0ff,
+        cadencia: "MÉDIA"
+    },
+    smg: {
+        nome: "SMG",
+        tipoDisparo: "AUTOMÁTICA",
+        automatico: true,
+        dano: 17,
+        intervaloTiro: 80,
+        velocidadeBala: 780,
+        projeteisPorTiro: 1,
+        dispersaoGraus: 0,
+        corProjetil: 0xa29bfe,
+        cadencia: "ALTA"
+    },
+    escopeta: {
+        nome: "ESCOPETA",
+        tipoDisparo: "SEMIAUTOMÁTICA",
+        automatico: false,
+        dano: 12,
+        intervaloTiro: 700,
+        velocidadeBala: 580,
+        projeteisPorTiro: 6,
+        dispersaoGraus: 22,
+        corProjetil: 0xff9f43,
+        cadencia: "BAIXA"
+    },
+    sniper: {
+        nome: "SNIPER",
+        tipoDisparo: "SEMIAUTOMÁTICA",
+        automatico: false,
+        dano: 100,
+        intervaloTiro: 950,
+        velocidadeBala: 1200,
+        projeteisPorTiro: 1,
+        dispersaoGraus: 0,
+        corProjetil: 0xff4757,
+        cadencia: "MUITO BAIXA"
+    }
+});
+
 const CONFIGURACAO_PARTIDA = {
     larguraMapa: 3000,
     alturaMapa: 2000,
     vidaInicialJogador: 100,
-    danoContatoInimigo: 10,
     intervaloDanoJogador: 1000,
-    vidaInimigo: 100,
-    danoBala: 25,
-    intervaloTiro: 150,
     velocidadeJogador: 250,
     velocidadeCorrida: 400,
-    velocidadeInimigo: 120,
-    alcanceDeteccaoInimigo: 700,
-    velocidadeBala: 600,
-    // Hoje há 1 jogador e 1 inimigo. Aumente ao criar novos inimigos no passo 31.
-    jogadoresIniciais: 2
+    armaInicial: "pistola",
+    // Um jogador + todos os inimigos cadastrados na lista acima.
+    jogadoresIniciais: INIMIGOS_INICIAIS.length + 1
 };
 
 let jogador;
@@ -28,7 +144,7 @@ let balas;
 let obstaculos;
 let inimigos;
 let ultimaDirecao = "baixo";
-let modoDisparo = "automatico";
+let armaAtual = CONFIGURACAO_PARTIDA.armaInicial;
 let ultimoTiro = 0;
 let ultimoDanoJogador = Number.NEGATIVE_INFINITY;
 let vidaJogador = CONFIGURACAO_PARTIDA.vidaInicialJogador;
@@ -44,6 +160,9 @@ const interfacePartida = {
     jogadoresVivos: document.getElementById("jogadores-vivos"),
     eliminacoes: document.getElementById("eliminacoes-atual"),
     eliminacoesFinais: document.getElementById("eliminacoes-finais"),
+    armaAtual: document.getElementById("arma-atual"),
+    estatisticasArma: document.getElementById("estatisticas-arma"),
+    slotsArmas: document.querySelectorAll("[data-arma]"),
     telaDerrota: document.getElementById("tela-derrota"),
     botaoReiniciar: document.getElementById("botao-reiniciar"),
     botaoLobby: document.getElementById("botao-lobby")
@@ -82,7 +201,9 @@ function criarJogo() {
     configurarMundo(this);
     criarObstaculos(this);
     criarJogador(this);
-    criarInimigo(this, 1100, 600, 30, 0x9b59b6);
+    criarInimigosIniciais(this);
+    jogadoresVivos = inimigos.countActive(true) + 1;
+    atualizarHUD();
     configurarColisoes(this);
     criarAnimacoes(this);
     configurarControles(this);
@@ -96,8 +217,8 @@ function resetarEstadoDaPartida() {
     eliminacoes = 0;
     jogadoresVivos = CONFIGURACAO_PARTIDA.jogadoresIniciais;
     ultimoDanoJogador = Number.NEGATIVE_INFINITY;
-    ultimoTiro = 0;
-    modoDisparo = "automatico";
+    ultimoTiro = Number.NEGATIVE_INFINITY;
+    armaAtual = CONFIGURACAO_PARTIDA.armaInicial;
     jogoEncerrado = false;
 
     esconderTelaDerrota();
@@ -144,19 +265,41 @@ function criarJogador(cena) {
     cena.physics.add.collider(jogador, obstaculos);
 }
 
-/*
- * PASSO 31: para adicionar mais inimigos, chame esta função novamente em criarJogo.
- * Exemplo: criarInimigo(this, 1600, 900, 24, 0xff9f1c);
- */
-function criarInimigo(cena, x, y, raio, cor) {
-    if (!inimigos) {
-        inimigos = cena.physics.add.group();
+function criarInimigosIniciais(cena) {
+    inimigos = cena.physics.add.group();
+
+    INIMIGOS_INICIAIS.forEach(({ tipo, x, y }) => {
+        criarInimigo(cena, tipo, x, y);
+    });
+}
+
+function criarInimigo(cena, tipoId, x, y) {
+    const tipo = TIPOS_INIMIGOS[tipoId];
+
+    if (!tipo) {
+        throw new Error(`Tipo de inimigo inexistente: ${tipoId}`);
     }
 
-    const inimigo = cena.add.circle(x, y, raio, cor);
+    const inimigo = cena.add.circle(x, y, tipo.raio, tipo.cor);
     cena.physics.add.existing(inimigo);
     inimigo.body.setCollideWorldBounds(true);
-    inimigo.setData("vida", CONFIGURACAO_PARTIDA.vidaInimigo);
+    inimigo.body.setCircle(tipo.raio);
+    inimigo.setData("tipo", tipoId);
+    inimigo.setData("vida", tipo.vida);
+    inimigo.setData("vidaMaxima", tipo.vida);
+    inimigo.setData("danoContato", tipo.danoContato);
+    inimigo.setData("velocidade", tipo.velocidade);
+    inimigo.setData("alcanceDeteccao", tipo.alcanceDeteccao);
+
+    // O rótulo facilita enxergar qual tipo de inimigo está sendo testado.
+    const rotulo = cena.add.text(x, y - tipo.raio - 14, tipo.nome, {
+        color: "#ffffff",
+        fontFamily: "Arial",
+        fontSize: "10px",
+        fontStyle: "bold"
+    }).setOrigin(0.5);
+
+    inimigo.setData("rotulo", rotulo);
     inimigos.add(inimigo);
 
     return inimigo;
@@ -164,7 +307,7 @@ function criarInimigo(cena, x, y, raio, cor) {
 
 function configurarColisoes(cena) {
     // Passo 24 e 25: o contato causa dano no jogador, com intervalo para não esvaziar a vida instantaneamente.
-    cena.physics.add.overlap(jogador, inimigos, () => causarDanoNoJogador(cena));
+    cena.physics.add.overlap(jogador, inimigos, (_jogador, inimigo) => causarDanoNoJogador(cena, inimigo));
     cena.physics.add.collider(inimigos, obstaculos);
 
     // Passos 19 a 21 e 30: cada tiro remove vida do inimigo e soma uma eliminação ao destruí-lo.
@@ -212,7 +355,11 @@ function configurarControles(cena) {
         direita: "D",
         correr: "SHIFT",
         atirar: "SPACE",
-        trocarDisparo: "Q"
+        arma1: Phaser.Input.Keyboard.KeyCodes.ONE,
+        arma2: Phaser.Input.Keyboard.KeyCodes.TWO,
+        arma3: Phaser.Input.Keyboard.KeyCodes.THREE,
+        arma4: Phaser.Input.Keyboard.KeyCodes.FOUR,
+        arma5: Phaser.Input.Keyboard.KeyCodes.FIVE
     });
 }
 
@@ -222,7 +369,8 @@ function atualizarJogo() {
     }
 
     movimentarJogador();
-    atualizarModoDisparo(this);
+    atualizarTrocaDeArma();
+    atualizarDisparo(this);
     atualizarInimigos(this);
 }
 
@@ -283,43 +431,83 @@ function atualizarAnimacaoJogador(movendoHorizontal, movendoVertical) {
     jogador.setFrame(quadrosParados[ultimaDirecao]);
 }
 
-function atualizarModoDisparo(cena) {
-    if (Phaser.Input.Keyboard.JustDown(teclas.trocarDisparo)) {
-        modoDisparo = modoDisparo === "automatico" ? "semiautomatico" : "automatico";
-        console.log(`Modo de disparo: ${modoDisparo.toUpperCase()}`);
+/*
+ * Seleção temporária para testar os passos 34 a 38.
+ * Inventário, slots reais e loot serão construídos apenas nos passos 46 a 53.
+ */
+function atualizarTrocaDeArma() {
+    const selecoes = [
+        [teclas.arma1, "pistola"],
+        [teclas.arma2, "rifle"],
+        [teclas.arma3, "smg"],
+        [teclas.arma4, "escopeta"],
+        [teclas.arma5, "sniper"]
+    ];
+
+    selecoes.forEach(([tecla, idArma]) => {
+        if (Phaser.Input.Keyboard.JustDown(tecla)) {
+            armaAtual = idArma;
+            ultimoTiro = Number.NEGATIVE_INFINITY;
+            atualizarHUD();
+        }
+    });
+}
+
+function atualizarDisparo(cena) {
+    const arma = ARMAS[armaAtual];
+    const apertouGatilho = arma.automatico
+        ? teclas.atirar.isDown
+        : Phaser.Input.Keyboard.JustDown(teclas.atirar);
+
+    const podeAtirar = cena.time.now >= ultimoTiro + arma.intervaloTiro;
+
+    if (!apertouGatilho || !podeAtirar) {
+        return;
     }
 
-    if (modoDisparo === "semiautomatico" && Phaser.Input.Keyboard.JustDown(teclas.atirar)) {
-        criarDisparo(cena);
-    }
+    dispararArma(cena, arma);
+    ultimoTiro = cena.time.now;
+}
 
-    if (
-        modoDisparo === "automatico" &&
-        teclas.atirar.isDown &&
-        cena.time.now > ultimoTiro + CONFIGURACAO_PARTIDA.intervaloTiro
-    ) {
-        criarDisparo(cena);
-        ultimoTiro = cena.time.now;
+function dispararArma(cena, arma) {
+    const anguloBase = anguloDaUltimaDirecao();
+
+    for (let indice = 0; indice < arma.projeteisPorTiro; indice += 1) {
+        const desvio = arma.projeteisPorTiro === 1
+            ? 0
+            : Phaser.Math.DegToRad(
+                Phaser.Math.FloatBetween(-arma.dispersaoGraus / 2, arma.dispersaoGraus / 2)
+            );
+
+        criarProjetil(cena, arma, anguloBase + desvio);
     }
 }
 
-function criarDisparo(cena) {
-    const bala = cena.add.circle(jogador.x, jogador.y, 6, 0xffff00);
+function anguloDaUltimaDirecao() {
+    const angulos = {
+        cima: -Math.PI / 2,
+        baixo: Math.PI / 2,
+        esquerda: Math.PI,
+        direita: 0
+    };
+
+    return angulos[ultimaDirecao];
+}
+
+function criarProjetil(cena, arma, angulo) {
+    const raioProjetil = arma.projeteisPorTiro > 1 ? 4 : 6;
+    const bala = cena.add.circle(jogador.x, jogador.y, raioProjetil, arma.corProjetil);
     cena.physics.add.existing(bala);
     bala.body.setCollideWorldBounds(true);
     bala.body.onWorldBounds = true;
+    bala.setData("dano", arma.dano);
+    bala.setData("arma", arma.nome);
     balas.add(bala);
 
-    const velocidade = CONFIGURACAO_PARTIDA.velocidadeBala;
-    const direcoes = {
-        cima: [0, -velocidade],
-        baixo: [0, velocidade],
-        esquerda: [-velocidade, 0],
-        direita: [velocidade, 0]
-    };
-
-    const [velocidadeX, velocidadeY] = direcoes[ultimaDirecao];
-    bala.body.setVelocity(velocidadeX, velocidadeY);
+    bala.body.setVelocity(
+        Math.cos(angulo) * arma.velocidadeBala,
+        Math.sin(angulo) * arma.velocidadeBala
+    );
 }
 
 function atualizarInimigos(cena) {
@@ -329,23 +517,29 @@ function atualizarInimigos(cena) {
         }
 
         const distancia = Phaser.Math.Distance.Between(inimigo.x, inimigo.y, jogador.x, jogador.y);
+        const rotulo = inimigo.getData("rotulo");
 
-        if (distancia < CONFIGURACAO_PARTIDA.alcanceDeteccaoInimigo) {
-            cena.physics.moveToObject(inimigo, jogador, CONFIGURACAO_PARTIDA.velocidadeInimigo);
+        if (rotulo) {
+            rotulo.setPosition(inimigo.x, inimigo.y - inimigo.displayHeight / 2 - 14);
+        }
+
+        if (distancia < inimigo.getData("alcanceDeteccao")) {
+            cena.physics.moveToObject(inimigo, jogador, inimigo.getData("velocidade"));
         } else {
             inimigo.body.setVelocity(0, 0);
         }
     });
 }
 
-function causarDanoNoJogador(cena) {
+function causarDanoNoJogador(cena, inimigo) {
     const podeReceberDano = cena.time.now > ultimoDanoJogador + CONFIGURACAO_PARTIDA.intervaloDanoJogador;
 
     if (jogoEncerrado || !podeReceberDano) {
         return;
     }
 
-    vidaJogador = Math.max(0, vidaJogador - CONFIGURACAO_PARTIDA.danoContatoInimigo);
+    const danoContato = inimigo.getData("danoContato");
+    vidaJogador = Math.max(0, vidaJogador - danoContato);
     ultimoDanoJogador = cena.time.now;
     atualizarHUD();
     cena.cameras.main.shake(90, 0.004);
@@ -367,10 +561,17 @@ function causarDanoNoInimigo(objeto1, objeto2) {
 
     bala.destroy();
 
-    const vidaAtual = inimigo.getData("vida") - CONFIGURACAO_PARTIDA.danoBala;
+    const danoDaBala = bala.getData("dano");
+    const vidaAtual = inimigo.getData("vida") - danoDaBala;
     inimigo.setData("vida", vidaAtual);
 
     if (vidaAtual <= 0) {
+        const rotulo = inimigo.getData("rotulo");
+
+        if (rotulo) {
+            rotulo.destroy();
+        }
+
         inimigo.destroy();
         eliminacoes += 1;
         jogadoresVivos = Math.max(1, jogadoresVivos - 1);
@@ -389,6 +590,19 @@ function atualizarHUD() {
     interfacePartida.jogadoresVivos.textContent = jogadoresVivos;
     interfacePartida.eliminacoes.textContent = eliminacoes;
     interfacePartida.eliminacoesFinais.textContent = eliminacoes;
+    atualizarHUDDaArma();
+}
+
+function atualizarHUDDaArma() {
+    const arma = ARMAS[armaAtual];
+
+    interfacePartida.armaAtual.textContent = arma.nome;
+    interfacePartida.estatisticasArma.textContent =
+        `${arma.tipoDisparo} · DANO ${arma.dano} · CADÊNCIA ${arma.cadencia}`;
+
+    interfacePartida.slotsArmas.forEach((slot) => {
+        slot.classList.toggle("slot-arma--ativa", slot.dataset.arma === armaAtual);
+    });
 }
 
 function mostrarTelaDerrota(cena) {

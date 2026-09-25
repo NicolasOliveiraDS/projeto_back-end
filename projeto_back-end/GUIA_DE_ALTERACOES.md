@@ -1,6 +1,8 @@
 # Guia de alterações — Battle Arena
 
-Este projeto está no bloco **25 a 30** do roteiro: vida do jogador, tela de eliminação, reinício, retorno ao lobby, HUD em tempo real e contador de eliminações.
+Os passos **25 a 30** já estão concluídos: vida do jogador, tela de eliminação, reinício, retorno ao lobby, HUD em tempo real e contador de eliminações.
+
+Para aprender a fase atual, comece por [AULA_31_A_40.md](AULA_31_A_40.md). Ela explica, em linguagem simples, inimigos e armas antes de você alterar o código.
 
 ## Fluxo da partida
 
@@ -14,33 +16,33 @@ Este projeto está no bloco **25 a 30** do roteiro: vida do jogador, tela de eli
 
 | O que você quer mudar | Arquivo | Ponto certo |
 | --- | --- | --- |
-| Vida inicial, dano, velocidade, cadência e quantidade de jogadores | `js/game.js` | Objeto `CONFIGURACAO_PARTIDA`, no começo do arquivo |
-| A quantidade de vida perdida quando o inimigo encosta | `js/game.js` | `danoContatoInimigo` |
-| A vida e o dano de cada inimigo | `js/game.js` | `vidaInimigo` e `danoBala` |
-| Criar mais inimigos | `js/game.js` | Função `criarJogo`; há um exemplo ao lado de `criarInimigo` |
+| Vida inicial, velocidade do jogador e intervalo de dano | `js/game.js` | Objeto `CONFIGURACAO_PARTIDA`, no começo do arquivo |
+| Vida, dano e velocidade de um tipo de inimigo | `js/game.js` | Objeto `TIPOS_INIMIGOS` |
+| Criar mais inimigos | `js/game.js` | Lista `INIMIGOS_INICIAIS` |
+| Dano, cadência e modo de uma arma | `js/game.js` | Objeto `ARMAS` |
 | Atualizar números do HUD | `js/game.js` | Função `atualizarHUD` |
 | O que ocorre quando o jogador morre | `js/game.js` | Função `mostrarTelaDerrota` |
 | Ação dos botões finais | `js/game.js` | Últimas linhas, eventos de `botaoReiniciar` e `botaoLobby` |
-| Textos, IDs e estrutura da tela | `game.html` | Blocos `.hud` e `#tela-derrota` |
-| Cores, barra de vida e aparência da morte | `css/game.css` | Variáveis `:root`, `.hud`, `.barra-vida` e `.tela-derrota` |
+| Textos, IDs e estrutura da tela | `game.html` | Blocos `.hud`, `.hud-armas` e `#tela-derrota` |
+| Cores, barra de vida, painel de armas e aparência da morte | `css/game.css` | Variáveis `:root`, `.hud`, `.hud-armas`, `.barra-vida` e `.tela-derrota` |
 
 ## Ajustes rápidos
 
-Para tornar a partida mais difícil, use por exemplo:
+Para tornar um tipo de inimigo mais difícil, altere estes valores dentro do bloco `bruto` já existente em `TIPOS_INIMIGOS` (sem apagar as outras propriedades):
 
 ```js
-danoContatoInimigo: 20,
-intervaloDanoJogador: 700,
-velocidadeInimigo: 160,
+vida: 320,
+danoContato: 30,
+velocidade: 70,
 ```
 
-Para criar outro inimigo, adicione dentro de `criarJogo`:
+Para criar outro inimigo, adicione uma linha em `INIMIGOS_INICIAIS`:
 
 ```js
-criarInimigo(this, 1600, 900, 24, 0xff9f1c);
+{ tipo: "rapido", x: 1900, y: 760 }
 ```
 
-Depois, altere `jogadoresIniciais` para incluir o jogador e todos os inimigos criados. Por exemplo: jogador + 2 inimigos = `jogadoresIniciais: 3`.
+O contador de jogadores vivos é calculado a partir dessa lista, então não é necessário alterar `jogadoresIniciais` manualmente.
 
 ## Como os passos atuais funcionam
 
@@ -53,4 +55,4 @@ Depois, altere `jogadoresIniciais` para incluir o jogador e todos os inimigos cr
 
 ## Próxima fase recomendada
 
-Siga para os passos **31 a 40**: vários tipos de inimigos e um sistema de armas. Antes de adicionar muitas armas, vale manter cada arma em uma configuração própria para não concentrar toda a lógica em `game.js`.
+Os passos **31 a 40** estão concluídos. O próximo bloco é **41 a 57**: munição, carregador, recarga, troca real de armas, loot, inventário, cura e escudo.
