@@ -287,6 +287,24 @@ const CONFIGURACAO_PARTIDA = {
     jogadoresIniciais: INIMIGOS_INICIAIS.length + 1
 };
 
+/*
+ * PASSOS 76 a 78 — Progressão local do perfil.
+ * Enquanto não existe backend, o perfil é salvo somente neste navegador.
+ * Os valores abaixo concentram o balanceamento de XP e créditos da partida.
+ */
+const CONFIGURACAO_PROGRESSAO = Object.freeze({
+    chaveStorage: "battle-arena-perfil-v1",
+    xpInicialPorNivel: 500,
+    aumentoXpPorNivel: 125,
+    xpPorEliminacao: 60,
+    xpPorDanoCausado: 0.15,
+    xpPorSegundoSobrevivido: 1,
+    bonusXpVitoria: 150,
+    creditosPorEliminacao: 8,
+    creditosPorDanoCausado: 0.02,
+    bonusCreditosVitoria: 25
+});
+
 let jogador;
 let teclas;
 let balas;
@@ -312,6 +330,8 @@ let inicioPartidaEm = 0;
 let tempoSobrevividoMs = 0;
 let danoCausado = 0;
 let cenaDaPartida;
+let perfilJogador = carregarPerfilJogador();
+let recompensaDaPartida = null;
 
 const interfacePartida = {
     vida: document.getElementById("vida-atual"),
@@ -320,11 +340,16 @@ const interfacePartida = {
     escudo: document.getElementById("escudo-atual"),
     barraEscudo: document.getElementById("barra-escudo"),
     zona: document.getElementById("zona-atual"),
+    nivelPerfil: document.getElementById("nivel-perfil"),
+    experienciaPerfil: document.getElementById("experiencia-perfil"),
+    barraExperiencia: document.getElementById("barra-experiencia"),
+    creditosPerfil: document.getElementById("creditos-perfil"),
     jogadoresVivos: document.getElementById("jogadores-vivos"),
     eliminacoes: document.getElementById("eliminacoes-atual"),
     eliminacoesFinais: document.getElementById("eliminacoes-finais"),
     tempoFinalDerrota: document.getElementById("tempo-final-derrota"),
     danoFinalDerrota: document.getElementById("dano-final-derrota"),
+    recompensaFinalDerrota: document.getElementById("recompensa-final-derrota"),
     armaAtual: document.getElementById("arma-atual"),
     estatisticasArma: document.getElementById("estatisticas-arma"),
     municaoPente: document.getElementById("municao-pente"),
@@ -349,6 +374,7 @@ const interfacePartida = {
     tempoFinalVitoria: document.getElementById("tempo-final-vitoria"),
     danoFinalVitoria: document.getElementById("dano-final-vitoria"),
     eliminacoesVitoria: document.getElementById("eliminacoes-vitoria"),
+    recompensaFinalVitoria: document.getElementById("recompensa-final-vitoria"),
     botaoReiniciarVitoria: document.getElementById("botao-reiniciar-vitoria"),
     botaoLobbyVitoria: document.getElementById("botao-lobby-vitoria")
 };
@@ -385,6 +411,99 @@ function sortearRaridade() {
     if (sorteio < 98) return "epico";
 
     return "lendario";
+}
+
+/* PASSO 76 — O perfil possui apenas dados que podem ser restaurados entre partidas. */
+function criarPerfilPadrao() {
+    return {
+        nivel: 1,
+        xp: 0,
+        creditos: 0
+    };
+}
+
+function lerNumeroInteiroNaoNegativo(valor, valorPadrao) {
+    return Number.isSafeInteger(valor) && valor >= 0 ? valor : valorPadrao;
+}
+
+function carregarPerfilJogador() {
+    const perfilPadrao = criarPerfilPadrao();
+
+    try {
+        const perfilSalvo = window.localStorage.getItem(CONFIGURACAO_PROGRESSAO.chaveStorage);
+
+        if (!perfilSalvo) {
+            return perfilPadrao;
+        }
+
+        const dados = JSON.parse(perfilSalvo);
+
+        return {
+            nivel: Math.max(1, lerNumeroInteiroNaoNegativo(dados.nivel, perfilPadrao.nivel)),
+            xp: lerNumeroInteiroNaoNegativo(dados.xp, perfilPadrao.xp),
+            creditos: lerNumeroInteiroNaoNegativo(dados.creditos, perfilPadrao.creditos)
+        };
+    } catch (_erro) {
+        // O jogo continua funcional quando o navegador bloqueia o localStorage.
+        return perfilPadrao;
+    }
+}
+
+function salvarPerfilJogador() {
+    try {
+        window.localStorage.setItem(
+            CONFIGURACAO_PROGRESSAO.chaveStorage,
+            JSON.stringify(perfilJogador)
+        );
+    } catch (_erro) {
+        // Sem armazenamento disponível, a progressão vale somente até fechar a aba.
+    }
+}
+
+/* PASSO 77 — Cada nível exige um pouco mais de XP que o anterior. */
+function obterXpNecessarioParaNivel(nivel) {
+    return CONFIGURACAO_PROGRESSAO.xpInicialPorNivel +
+        (Math.max(1, nivel) - 1) * CONFIGURACAO_PROGRESSAO.aumentoXpPorNivel;
+}
+
+/* PASSO 78 — A recompensa é calculada e gravada uma única vez ao encerrar a partida. */
+function concederRecompensaDaPartida(venceu) {
+    if (recompensaDaPartida) {
+        return recompensaDaPartida;
+    }
+
+    const segundosSobrevividos = Math.floor(tempoSobrevividoMs / 1000);
+    const xpGanho = Math.max(0, Math.floor(
+        eliminacoes * CONFIGURACAO_PROGRESSAO.xpPorEliminacao +
+        danoCausado * CONFIGURACAO_PROGRESSAO.xpPorDanoCausado +
+        segundosSobrevividos * CONFIGURACAO_PROGRESSAO.xpPorSegundoSobrevivido +
+        (venceu ? CONFIGURACAO_PROGRESSAO.bonusXpVitoria : 0)
+    ));
+    const creditosGanhos = Math.max(0, Math.floor(
+        eliminacoes * CONFIGURACAO_PROGRESSAO.creditosPorEliminacao +
+        danoCausado * CONFIGURACAO_PROGRESSAO.creditosPorDanoCausado +
+        (venceu ? CONFIGURACAO_PROGRESSAO.bonusCreditosVitoria : 0)
+    ));
+    const nivelAntes = perfilJogador.nivel;
+
+    perfilJogador.xp += xpGanho;
+
+    while (perfilJogador.xp >= obterXpNecessarioParaNivel(perfilJogador.nivel)) {
+        perfilJogador.xp -= obterXpNecessarioParaNivel(perfilJogador.nivel);
+        perfilJogador.nivel += 1;
+    }
+
+    perfilJogador.creditos += creditosGanhos;
+    recompensaDaPartida = {
+        xp: xpGanho,
+        creditos: creditosGanhos,
+        niveisConquistados: perfilJogador.nivel - nivelAntes
+    };
+
+    salvarPerfilJogador();
+    atualizarHUDDaProgressao();
+
+    return recompensaDaPartida;
 }
 
 const jogo = new Phaser.Game(config);
@@ -461,6 +580,7 @@ function resetarEstadoDaPartida() {
     ultimoDanoZona = Number.NEGATIVE_INFINITY;
     tempoSobrevividoMs = 0;
     danoCausado = 0;
+    recompensaDaPartida = null;
 
     esconderTelaDerrota();
     esconderTelaVitoria();
@@ -1518,8 +1638,21 @@ function atualizarHUD() {
     interfacePartida.jogadoresVivos.textContent = jogadoresVivos;
     interfacePartida.eliminacoes.textContent = eliminacoes;
     interfacePartida.eliminacoesFinais.textContent = eliminacoes;
+    atualizarHUDDaProgressao();
     atualizarHUDConsumiveis();
     atualizarHUDDaArma();
+}
+
+function atualizarHUDDaProgressao() {
+    const xpNecessario = obterXpNecessarioParaNivel(perfilJogador.nivel);
+    const percentualXp = Phaser.Math.Clamp((perfilJogador.xp / xpNecessario) * 100, 0, 100);
+
+    interfacePartida.nivelPerfil.textContent = perfilJogador.nivel;
+    interfacePartida.experienciaPerfil.textContent = `${perfilJogador.xp} / ${xpNecessario} XP`;
+    interfacePartida.barraExperiencia.style.setProperty("--xp-percentual", `${percentualXp}%`);
+    interfacePartida.barraExperiencia.setAttribute("aria-valuenow", perfilJogador.xp);
+    interfacePartida.barraExperiencia.setAttribute("aria-valuemax", xpNecessario);
+    interfacePartida.creditosPerfil.textContent = perfilJogador.creditos;
 }
 
 function atualizarHUDDaArma() {
@@ -1621,6 +1754,7 @@ function mostrarTelaDerrota(cena) {
     }
 
     atualizarEstatisticasDaPartida(cena);
+    concederRecompensaDaPartida(false);
     jogoEncerrado = true;
     jogador.body.setVelocity(0, 0);
     jogador.anims.stop();
@@ -1644,6 +1778,7 @@ function mostrarTelaVitoria(cena) {
     }
 
     atualizarEstatisticasDaPartida(cena);
+    concederRecompensaDaPartida(true);
     jogoEncerrado = true;
     jogador.body.setVelocity(0, 0);
     jogador.anims.stop();
@@ -1663,13 +1798,25 @@ function esconderTelaVitoria() {
 
 function preencherEstatisticasFinais() {
     const tempoFormatado = formatarTempo(tempoSobrevividoMs);
+    const recompensa = recompensaDaPartida || { xp: 0, creditos: 0, niveisConquistados: 0 };
+    const textoRecompensa = formatarRecompensaFinal(recompensa);
 
     interfacePartida.eliminacoesFinais.textContent = eliminacoes;
     interfacePartida.tempoFinalDerrota.textContent = tempoFormatado;
     interfacePartida.danoFinalDerrota.textContent = danoCausado;
+    interfacePartida.recompensaFinalDerrota.textContent = textoRecompensa;
     interfacePartida.eliminacoesVitoria.textContent = eliminacoes;
     interfacePartida.tempoFinalVitoria.textContent = tempoFormatado;
     interfacePartida.danoFinalVitoria.textContent = danoCausado;
+    interfacePartida.recompensaFinalVitoria.textContent = textoRecompensa;
+}
+
+function formatarRecompensaFinal({ xp, creditos, niveisConquistados }) {
+    const nivelExtra = niveisConquistados > 0
+        ? ` · NÍVEL +${niveisConquistados}`
+        : "";
+
+    return `+${xp} XP · +${creditos} CR${nivelExtra}`;
 }
 
 function formatarTempo(tempoEmMs) {

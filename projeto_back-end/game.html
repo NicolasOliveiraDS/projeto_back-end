@@ -66,6 +66,24 @@
                 <span>ZONA</span>
                 <strong id="zona-atual" aria-live="polite">REDUZ EM 15s</strong>
             </div>
+
+            <!-- Passos 76 a 78: perfil salvo localmente entre partidas deste navegador. -->
+            <div class="hud__item hud__item--perfil">
+                <span>PERFIL · NÍVEL <strong id="nivel-perfil" aria-live="polite">1</strong></span>
+                <div
+                    id="barra-experiencia"
+                    class="barra-experiencia"
+                    role="progressbar"
+                    aria-label="Experiência até o próximo nível"
+                    aria-valuemin="0"
+                    aria-valuemax="500"
+                    aria-valuenow="0"
+                >
+                    <span class="barra-experiencia__preenchimento"></span>
+                </div>
+                <small id="experiencia-perfil">0 / 500 XP</small>
+                <small>CR <strong id="creditos-perfil" aria-live="polite">0</strong></small>
+            </div>
         </section>
 
         <div id="game-container"></div>
@@ -144,6 +162,7 @@
                     <p>Tempo sobrevivido: <strong id="tempo-final-derrota">00:00</strong></p>
                     <p>Dano causado: <strong id="dano-final-derrota">0</strong></p>
                     <p>Eliminações: <strong id="eliminacoes-finais">0</strong></p>
+                    <p class="tela-derrota__recompensa">Recompensa: <strong id="recompensa-final-derrota">+0 XP · +0 CR</strong></p>
                 </div>
 
                 <div class="tela-derrota__acoes">
@@ -163,6 +182,7 @@
                     <p>Tempo sobrevivido: <strong id="tempo-final-vitoria">00:00</strong></p>
                     <p>Dano causado: <strong id="dano-final-vitoria">0</strong></p>
                     <p>Eliminações: <strong id="eliminacoes-vitoria">0</strong></p>
+                    <p class="tela-derrota__recompensa">Recompensa: <strong id="recompensa-final-vitoria">+0 XP · +0 CR</strong></p>
                 </div>
 
                 <div class="tela-derrota__acoes">
