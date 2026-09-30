@@ -305,6 +305,17 @@ const CONFIGURACAO_PROGRESSAO = Object.freeze({
     bonusCreditosVitoria: 25
 });
 
+//dados da missao atual 
+const MISSAO_ATUAL  = Object.freeze({
+    titulo: "CAÇADOR",
+    objetivo: "Elimine 3 inimigos",
+    metaEliminacoes: 3,
+    recompensaXp: 100,
+    recompensaCreditos: 15
+});
+
+let eliminacoesDaMissao = 0;
+let missaoConcluida = false;
 let jogador;
 let teclas;
 let balas;
@@ -330,6 +341,8 @@ let inicioPartidaEm = 0;
 let tempoSobrevividoMs = 0;
 let danoCausado = 0;
 let cenaDaPartida;
+let ponteiro;
+let anguloMira = Math.PI / 2;
 let perfilJogador = carregarPerfilJogador();
 let recompensaDaPartida = null;
 
@@ -570,6 +583,8 @@ function resetarEstadoDaPartida() {
     vidaJogador = CONFIGURACAO_PARTIDA.vidaInicialJogador;
     escudoJogador = 0;
     eliminacoes = 0;
+    eliminacoesDaMissao = 0;
+    missaoConcluida = false;
     jogadoresVivos = CONFIGURACAO_PARTIDA.jogadoresIniciais;
     ultimoDanoJogador = Number.NEGATIVE_INFINITY;
     ultimoTiro = Number.NEGATIVE_INFINITY;
@@ -1073,6 +1088,21 @@ function configurarControles(cena) {
         arma4: Phaser.Input.Keyboard.KeyCodes.FOUR,
         arma5: Phaser.Input.Keyboard.KeyCodes.FIVE
     });
+
+    ponteiro = cena.input.activePointer;
+    cena.input.setDefaultCursor("crosshair");
+}
+
+function atualizarMiraDoMouse(cena) {
+    const alvo = cena.cameras.main.getWorldPoint(ponteiro.x, ponteiro.y);
+    const distanciaX = alvo.x - jogador.x;
+    const distanciaY = alvo.y - jogador.y;
+
+    if (distanciaX === 0 && distanciaY === 0) {
+        return;
+    }
+
+    anguloMira = Math.atan2(distanciaY, distanciaX);
 }
 
 function atualizarJogo() {
@@ -1087,6 +1117,7 @@ function atualizarJogo() {
         return;
     }
 
+    atualizarMiraDoMouse(this);
     movimentarJogador();
     atualizarTrocaDeArma();
     atualizarRecarga(this);
@@ -1286,9 +1317,7 @@ function atualizarDisparo(cena) {
     }
 
     const arma = ARMAS[armaId];
-    const apertouGatilho = arma.automatico
-        ? teclas.atirar.isDown
-        : Phaser.Input.Keyboard.JustDown(teclas.atirar);
+    const apertouGatilho = gatilhoFoiAcionado(arma);
     const podeAtirar = cena.time.now >= ultimoTiro + arma.intervaloTiro;
 
     if (!apertouGatilho || !podeAtirar) {
@@ -1310,8 +1339,20 @@ function atualizarDisparo(cena) {
     }
 }
 
+function gatilhoFoiAcionado(arma) {
+    const gatilhoTeclado = arma.automatico
+        ? teclas.atirar.isDown
+        : Phaser.Input.Keyboard.JustDown(teclas.atirar);
+    const botaoEsquerdoPressionado = ponteiro.leftButtonDown();
+    const gatilhoMouse = arma.automatico
+        ? botaoEsquerdoPressionado
+        : botaoEsquerdoPressionado && Phaser.Input.Pointer.JustDown(ponteiro);
+
+    return gatilhoTeclado || gatilhoMouse;
+}
+
 function dispararArma(cena, armaId, arma) {
-    const anguloBase = anguloDaUltimaDirecao();
+    const anguloBase = anguloMira;
 
     for (let indice = 0; indice < arma.projeteisPorTiro; indice += 1) {
         const desvio = arma.projeteisPorTiro === 1
@@ -1322,17 +1363,6 @@ function dispararArma(cena, armaId, arma) {
 
         criarProjetil(cena, armaId, arma, anguloBase + desvio);
     }
-}
-
-function anguloDaUltimaDirecao() {
-    const angulos = {
-        cima: -Math.PI / 2,
-        baixo: Math.PI / 2,
-        esquerda: Math.PI,
-        direita: 0
-    };
-
-    return angulos[ultimaDirecao];
 }
 
 function criarProjetil(cena, armaId, arma, angulo) {
@@ -1614,6 +1644,18 @@ function causarDanoNoInimigo(objeto1, objeto2) {
 
         inimigo.destroy();
         eliminacoes += 1;
+
+        if (!missaoConcluida) {
+            eliminacoesDaMissao = Math.min(
+                MISSAO_ATUAL.metaEliminacoes,
+                eliminacoesDaMissao + 1
+            );
+
+            if (eliminacoesDaMissao === MISSAO_ATUAL.metaEliminacoes) {
+                missaoConcluida = true;
+                mostrarFeedback(`MISSÃO CONCLUIDA: ${MISSAO_ATUAL.titulo}`);
+            }
+        }
         jogadoresVivos = Math.max(1, jogadoresVivos - 1);
         atualizarHUD();
 
